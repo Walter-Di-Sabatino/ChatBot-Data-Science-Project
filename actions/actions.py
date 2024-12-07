@@ -1,34 +1,29 @@
-# This files contains your custom actions which can be used to run
-# custom Python code.
-#
-# See this guide on how to implement these action:
-# https://rasa.com/docs/rasa/custom-actions
-
-
-# This is a simple example for a custom action which utters "Hello World!"
-
-# from typing import Any, Text, Dict, List
-#
-# from rasa_sdk import Action, Tracker
-# from rasa_sdk.executor import CollectingDispatcher
-#
-#
-# class ActionHelloWorld(Action):
-#
-#     def name(self) -> Text:
-#         return "action_hello_world"
-#
-#     def run(self, dispatcher: CollectingDispatcher,
-#             tracker: Tracker,
-#             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-#
-#         dispatcher.utter_message(text="Hello World!")
-#
-#         return []
-
 from typing import Any, Text, Dict, List
+from dotenv import load_dotenv
+import os
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy import create_engine
+from database.models import Game, Developer, Publisher, Genre, Review, Package  
+
+# Carica le variabili di ambiente dal file .env
+load_dotenv()
+
+# Recupera gli elementi dell'URL del database
+DB_USER = os.getenv("DB_USER", "root")  # Usa "root" come valore predefinito
+DB_PASSWORD = os.getenv("DB_PASSWORD", "Jawalter2020-")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_NAME = os.getenv("DB_NAME", "steam_library")
+DB_DRIVER = os.getenv("DB_DRIVER", "mysql+pymysql")
+
+# Costruisci l'URL del database
+DATABASE_URL = f"{DB_DRIVER}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+
+# Create an engine and session
+engine = create_engine(DATABASE_URL)
+Session = sessionmaker(bind=engine)
+session = Session()
 
 class ActionProvideGameInfo(Action):
     def name(self) -> Text:
@@ -37,10 +32,16 @@ class ActionProvideGameInfo(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        # Placeholder logic
         game_name = tracker.get_slot("game_name")
-        # Logic to retrieve game info goes here
-        dispatcher.utter_message(text=f"Details about the game '{game_name}' will be fetched.")
+        # Query the Game model to get details
+        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+        
+        if game:
+            details = f"Game: {game.name}\nRelease Date: {game.release_date}\nPrice: {game.price}\nDescription: {game.short_description}"
+            dispatcher.utter_message(text=details)
+        else:
+            dispatcher.utter_message(text=f"No details found for the game '{game_name}'.")
+
         return []
 
 class ActionProvideDeveloperInfo(Action):
@@ -50,10 +51,15 @@ class ActionProvideDeveloperInfo(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        # Placeholder logic
         game_name = tracker.get_slot("game_name")
-        # Logic to retrieve developer info goes here
-        dispatcher.utter_message(text=f"Developer information for '{game_name}' will be fetched.")
+        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+
+        if game:
+            developers = [developer.name for developer in game.developers]
+            dispatcher.utter_message(text=f"Developers for '{game_name}': {', '.join(developers)}")
+        else:
+            dispatcher.utter_message(text=f"No developer information found for '{game_name}'.")
+
         return []
 
 class ActionProvidePublisherInfo(Action):
@@ -63,10 +69,15 @@ class ActionProvidePublisherInfo(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        # Placeholder logic
         game_name = tracker.get_slot("game_name")
-        # Logic to retrieve publisher info goes here
-        dispatcher.utter_message(text=f"Publisher information for '{game_name}' will be fetched.")
+        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+
+        if game:
+            publishers = [publisher.name for publisher in game.publishers]
+            dispatcher.utter_message(text=f"Publishers for '{game_name}': {', '.join(publishers)}")
+        else:
+            dispatcher.utter_message(text=f"No publisher information found for '{game_name}'.")
+
         return []
 
 class ActionProvideSystemRequirements(Action):
@@ -76,10 +87,16 @@ class ActionProvideSystemRequirements(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        # Placeholder logic
         game_name = tracker.get_slot("game_name")
-        # Logic to retrieve system requirements goes here
-        dispatcher.utter_message(text=f"System requirements for '{game_name}' will be fetched.")
+        # Add system requirements query if available in the database schema
+        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+
+        if game:
+            # Placeholder, adjust as needed
+            dispatcher.utter_message(text=f"System requirements for '{game_name}' will be fetched.")
+        else:
+            dispatcher.utter_message(text=f"No system requirements found for '{game_name}'.")
+
         return []
 
 class ActionProvidePriceInfo(Action):
@@ -89,10 +106,14 @@ class ActionProvidePriceInfo(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        # Placeholder logic
         game_name = tracker.get_slot("game_name")
-        # Logic to retrieve price info goes here
-        dispatcher.utter_message(text=f"Price information for '{game_name}' will be fetched.")
+        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+
+        if game:
+            dispatcher.utter_message(text=f"The price for '{game_name}' is {game.price}.")
+        else:
+            dispatcher.utter_message(text=f"No price information found for '{game_name}'.")
+
         return []
 
 class ActionProvideGenreInfo(Action):
@@ -102,10 +123,15 @@ class ActionProvideGenreInfo(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        # Placeholder logic
         game_name = tracker.get_slot("game_name")
-        # Logic to retrieve genre info goes here
-        dispatcher.utter_message(text=f"Genre information for '{game_name}' will be fetched.")
+        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+
+        if game:
+            genres = [genre.name for genre in game.genres]
+            dispatcher.utter_message(text=f"Genres for '{game_name}': {', '.join(genres)}")
+        else:
+            dispatcher.utter_message(text=f"No genre information found for '{game_name}'.")
+
         return []
 
 class ActionProvideReviewInfo(Action):
@@ -115,10 +141,15 @@ class ActionProvideReviewInfo(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        # Placeholder logic
         game_name = tracker.get_slot("game_name")
-        # Logic to retrieve review info goes here
-        dispatcher.utter_message(text=f"Review information for '{game_name}' will be fetched.")
+        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+
+        if game:
+            # Assuming reviews are stored as text or ratings in the game model
+            dispatcher.utter_message(text=f"Reviews for '{game_name}': {game.reviews}")
+        else:
+            dispatcher.utter_message(text=f"No review information found for '{game_name}'.")
+
         return []
 
 class ActionProvideAchievementsInfo(Action):
@@ -128,8 +159,12 @@ class ActionProvideAchievementsInfo(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        # Placeholder logic
         game_name = tracker.get_slot("game_name")
-        # Logic to retrieve achievements info goes here
-        dispatcher.utter_message(text=f"Achievements for '{game_name}' will be fetched.")
+        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+
+        if game:
+            dispatcher.utter_message(text=f"Achievements for '{game_name}': {game.achievements}")
+        else:
+            dispatcher.utter_message(text=f"No achievements information found for '{game_name}'.")
+
         return []

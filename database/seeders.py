@@ -4,7 +4,7 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 from dateutil import parser
-from tables import *
+from database.models import *
 from sqlalchemy.exc import IntegrityError
 
 # Configura la connessione al database
@@ -237,7 +237,7 @@ def seed_data(dataset):
 def run_seeding():
     """Esegui il seeding."""
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    json_file_path = os.path.join(script_dir, 'raw', 'games.json')
+    json_file_path = os.path.join(script_dir, 'dataset', 'games.json')
 
     print(f"Percorso completo del file JSON: {json_file_path}")
     dataset = load_json_data(json_file_path)

@@ -2,15 +2,31 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from alembic import context
+from dotenv import load_dotenv
+import os
 
 import pymysql
 
 # Installa pymysql come MySQLdb per Alembic
 pymysql.install_as_MySQLdb()
 
+# Carica le variabili d'ambiente dal file .env
+load_dotenv()
+
+# Ottieni le variabili dal .env
+db_user = os.getenv("DB_USER")
+db_password = os.getenv("DB_PASSWORD")
+db_host = os.getenv("DB_HOST")
+db_name = os.getenv("DB_NAME")
+db_driver = os.getenv("DB_DRIVER")
+
+# Costruisci l'URL del database
+database_url = f"{db_driver}://{db_user}:{db_password}@{db_host}/{db_name}"
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+config.set_main_option('sqlalchemy.url', database_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -19,7 +35,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from tables import Base  # Assicurati che 'Base' sia correttamente importato
+from database.models import Base  # Assicurati che 'Base' sia correttamente importato
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,
