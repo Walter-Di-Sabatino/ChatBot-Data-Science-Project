@@ -3,9 +3,10 @@ from dotenv import load_dotenv
 import os
 from rasa_sdk import Action, Tracker
 from rasa_sdk.executor import CollectingDispatcher
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import create_engine
-from database.models import Game, Developer, Publisher, Genre, Review, Package  
+from database.models import Game, Developer, Publisher, Genre, Package
+from rasa_sdk.events import SlotSet
 
 # Carica le variabili di ambiente dal file .env
 load_dotenv()
@@ -20,10 +21,20 @@ DB_DRIVER = os.getenv("DB_DRIVER", "mysql+pymysql")
 # Costruisci l'URL del database
 DATABASE_URL = f"{DB_DRIVER}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 
-# Create an engine and session
+# Create an engine and sessionmaker
 engine = create_engine(DATABASE_URL)
-Session = sessionmaker(bind=engine)
-session = Session()
+SessionFactory = sessionmaker(bind=engine)
+
+# Helper function to get the session
+def get_session() -> Session:
+    return SessionFactory()
+
+# Utility function to get game details
+def get_game_by_name(game_name: str) -> Game:
+    session = get_session()
+    game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+    session.close()
+    return game
 
 class ActionProvideGameInfo(Action):
     def name(self) -> Text:
@@ -32,17 +43,39 @@ class ActionProvideGameInfo(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        game_name = tracker.get_slot("game_name")
-        # Query the Game model to get details
-        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
-        
-        if game:
-            details = f"Game: {game.name}\nRelease Date: {game.release_date}\nPrice: {game.price}\nDescription: {game.short_description}"
-            dispatcher.utter_message(text=details)
-        else:
-            dispatcher.utter_message(text=f"No details found for the game '{game_name}'.")
 
-        return []
+        # Recupera i dati dagli slot
+        game_name = tracker.get_slot("game_name")
+
+        # Se manca il nome del gioco, invia un messaggio di errore
+        if not game_name:
+            dispatcher.utter_message(text="I need the name of the game to provide details.")
+            return []
+
+        # Connessione al database e recupero del gioco
+        session = get_session()
+        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+        session.close()
+
+        print(game)
+
+        # Se il gioco non è trovato
+        if not game:
+            dispatcher.utter_message(text=f"No details found for the game '{game_name}'.")
+            return []
+
+        # Se il gioco è trovato, aggiorna gli slot con i dettagli
+        game_name = game.name
+        release_date = game.release_date
+        price = game.price
+
+        # Ritorna gli SlotSet con i nuovi valori
+        return [
+            SlotSet("game_name", game_name),
+            SlotSet("release_date", release_date),
+            SlotSet("price", price)
+        ]
+
 
 class ActionProvideDeveloperInfo(Action):
     def name(self) -> Text:
@@ -52,7 +85,7 @@ class ActionProvideDeveloperInfo(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         game_name = tracker.get_slot("game_name")
-        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+        game = get_game_by_name(game_name)
 
         if game:
             developers = [developer.name for developer in game.developers]
@@ -70,7 +103,7 @@ class ActionProvidePublisherInfo(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         game_name = tracker.get_slot("game_name")
-        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+        game = get_game_by_name(game_name)
 
         if game:
             publishers = [publisher.name for publisher in game.publishers]
@@ -88,12 +121,16 @@ class ActionProvideSystemRequirements(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         game_name = tracker.get_slot("game_name")
-        # Add system requirements query if available in the database schema
-        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+        game = get_game_by_name(game_name)
 
         if game:
-            # Placeholder, adjust as needed
-            dispatcher.utter_message(text=f"System requirements for '{game_name}' will be fetched.")
+            # You can extend this logic for specific system requirements retrieval
+            support_windows = tracker.get_slot("supportWindows")
+            support_mac = tracker.get_slot("supportMac")
+            support_linux = tracker.get_slot("supportLinux")
+            dispatcher.utter_message(
+                text=f"{game_name} supports the following platforms: Windows - {support_windows}, Mac - {support_mac}, Linux - {support_linux}."
+            )
         else:
             dispatcher.utter_message(text=f"No system requirements found for '{game_name}'.")
 
@@ -107,10 +144,11 @@ class ActionProvidePriceInfo(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         game_name = tracker.get_slot("game_name")
-        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+        game = get_game_by_name(game_name)
 
         if game:
-            dispatcher.utter_message(text=f"The price for '{game_name}' is {game.price}.")
+            price = tracker.get_slot("price")
+            dispatcher.utter_message(text=f"The price for '{game_name}' is {price} USD.")
         else:
             dispatcher.utter_message(text=f"No price information found for '{game_name}'.")
 
@@ -124,7 +162,7 @@ class ActionProvideGenreInfo(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         game_name = tracker.get_slot("game_name")
-        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+        game = get_game_by_name(game_name)
 
         if game:
             genres = [genre.name for genre in game.genres]
@@ -142,11 +180,14 @@ class ActionProvideReviewInfo(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         game_name = tracker.get_slot("game_name")
-        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+        game = get_game_by_name(game_name)
 
         if game:
-            # Assuming reviews are stored as text or ratings in the game model
-            dispatcher.utter_message(text=f"Reviews for '{game_name}': {game.reviews}")
+            metacritic_score = tracker.get_slot("metacriticScore")
+            user_score = tracker.get_slot("userScore")
+            dispatcher.utter_message(
+                text=f"Reviews for '{game_name}': Metacritic Score - {metacritic_score}, User Score - {user_score}"
+            )
         else:
             dispatcher.utter_message(text=f"No review information found for '{game_name}'.")
 
@@ -160,10 +201,11 @@ class ActionProvideAchievementsInfo(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         game_name = tracker.get_slot("game_name")
-        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
+        game = get_game_by_name(game_name)
 
         if game:
-            dispatcher.utter_message(text=f"Achievements for '{game_name}': {game.achievements}")
+            achievements = tracker.get_slot("achievements")
+            dispatcher.utter_message(text=f"Achievements for '{game_name}': {achievements}")
         else:
             dispatcher.utter_message(text=f"No achievements information found for '{game_name}'.")
 
