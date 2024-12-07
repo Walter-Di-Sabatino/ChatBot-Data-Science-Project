@@ -1,5 +1,12 @@
 version: "3.1"
 
+entities:
+  - game_name
+
+slots:
+  game_name:
+    type: text
+
 intents:
   - greet
   - goodbye
@@ -8,8 +15,40 @@ intents:
   - mood_great
   - mood_unhappy
   - bot_challenge
+  - game_info
+  - developer_info
+  - publisher_info
+  - system_requirements
+  - price_info
+  - genre_info
+  - review_info
+  - achievements_info
 
 responses:
+utter_game_info:
+    - text: "{game_name} was released on {release_date}. It has an estimated {estimated_owners} owners and costs {price} USD."
+
+  utter_developer_info:
+    - text: "{game_name} was developed by {developer_name}."
+
+  utter_publisher_info:
+    - text: "{game_name} was published by {publisher_name}."
+
+  utter_system_requirements:
+    - text: "{game_name} supports the following platforms: Windows - {supportWindows}, Mac - {supportMac}, Linux - {supportLinux}."
+
+  utter_price_info:
+    - text: "{game_name} is priced at {price} USD."
+
+  utter_genre_info:
+    - text: "{game_name} belongs to the following genres: {genres}."
+
+  utter_review_info:
+    - text: "{game_name} has a Metacritic score of {metacriticScore} and a user score of {userScore}."
+
+  utter_achievements_info:
+    - text: "{game_name} has {achievements} achievements."
+
   utter_greet:
   - text: "Hey! How are you?"
 
@@ -28,6 +67,16 @@ responses:
 
   utter_iamabot:
   - text: "I am a bot, powered by Rasa."
+
+actions:
+  - action_provide_game_info
+  - action_provide_developer_info
+  - action_provide_publisher_info
+  - action_provide_system_requirements
+  - action_provide_price_info
+  - action_provide_genre_info
+  - action_provide_review_info
+  - action_provide_achievements_info
 
 session_config:
   session_expiration_time: 60

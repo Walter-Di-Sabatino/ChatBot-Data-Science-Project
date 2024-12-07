@@ -1,6 +1,51 @@
 version: "3.1"
 
 nlu:
+
+- intent: game_info
+  examples: |
+    - Tell me about [Half-Life](game_name).
+    - What is the release date of [Portal](game_name)?
+    - How many players have [Counter-Strike](game_name)?
+    - Is [Dota 2](game_name) free?
+    - Can [Among Us](game_name) run on Mac?
+    - Does [Cyberpunk 2077](game_name) have DLCs?
+
+- intent: developer_info
+  examples: |
+    - Who developed [The Witcher 3](game_name)?
+    - Tell me the developers of [Stardew Valley](game_name).
+
+- intent: publisher_info
+  examples: |
+    - Who published [Skyrim](game_name)?
+    - Can you list the publishers for [Fallout](game_name)?
+
+- intent: system_requirements
+  examples: |
+    - Does [Minecraft](game_name) support Linux?
+    - Is [Halo Infinite](game_name) compatible with Windows?
+
+- intent: price_info
+  examples: |
+    - How much is [FIFA 22](game_name)?
+    - Is [Fortnite](game_name) free?
+
+- intent: genre_info
+  examples: |
+    - What genre is [Overwatch](game_name)?
+    - List the genres for [Apex Legends](game_name).
+
+- intent: review_info
+  examples: |
+    - What are the reviews for [Cyberpunk 2077](game_name)?
+    - How is [Valorant](game_name) rated?
+
+- intent: achievements_info
+  examples: |
+    - How many achievements are there in [Hades](game_name)?
+    - Does [Celeste](game_name) have any achievements?
+
 - intent: greet
   examples: |
     - hey
@@ -89,3 +134,6 @@ nlu:
     - are you a human?
     - am I talking to a bot?
     - am I talking to a human?
+
+
+

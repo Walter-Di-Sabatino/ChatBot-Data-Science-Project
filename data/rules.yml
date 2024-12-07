@@ -2,6 +2,47 @@ version: "3.1"
 
 rules:
 
+rules:
+- rule: Provide game info
+  steps:
+  - intent: game_info
+  - action: action_provide_game_info
+
+- rule: Provide developer info
+  steps:
+  - intent: developer_info
+  - action: action_provide_developer_info
+
+- rule: Provide publisher info
+  steps:
+  - intent: publisher_info
+  - action: action_provide_publisher_info
+
+- rule: Provide system requirements
+  steps:
+  - intent: system_requirements
+  - action: action_provide_system_requirements
+
+- rule: Provide price info
+  steps:
+  - intent: price_info
+  - action: action_provide_price_info
+
+- rule: Provide genre info
+  steps:
+  - intent: genre_info
+  - action: action_provide_genre_info
+
+- rule: Provide review info
+  steps:
+  - intent: review_info
+  - action: action_provide_review_info
+
+- rule: Provide achievements info
+  steps:
+  - intent: achievements_info
+  - action: action_provide_achievements_info
+
 - rule: Say goodbye anytime the user says goodbye
   steps:
   - intent: goodbye

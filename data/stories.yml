@@ -2,6 +2,63 @@ version: "3.1"
 
 stories:
 
+stories:
+- story: Provide game information
+  steps:
+  - intent: game_info
+    entities:
+      - game_name: "Half-Life"
+  - action: action_provide_game_info
+
+- story: Provide developer information
+  steps:
+  - intent: developer_info
+    entities:
+      - game_name: "The Witcher 3"
+  - action: action_provide_developer_info
+
+- story: Provide publisher information
+  steps:
+  - intent: publisher_info
+    entities:
+      - game_name: "Skyrim"
+  - action: action_provide_publisher_info
+
+- story: Provide system requirements
+  steps:
+  - intent: system_requirements
+    entities:
+      - game_name: "Minecraft"
+  - action: action_provide_system_requirements
+
+- story: Provide price information
+  steps:
+  - intent: price_info
+    entities:
+      - game_name: "Fortnite"
+  - action: action_provide_price_info
+
+- story: Provide genre information
+  steps:
+  - intent: genre_info
+    entities:
+      - game_name: "Overwatch"
+  - action: action_provide_genre_info
+
+- story: Provide review information
+  steps:
+  - intent: review_info
+    entities:
+      - game_name: "Valorant"
+  - action: action_provide_review_info
+
+- story: Provide achievements information
+  steps:
+  - intent: achievements_info
+    entities:
+      - game_name: "Celeste"
+  - action: action_provide_achievements_info
+
 - story: happy path
   steps:
   - intent: greet
