@@ -1,14 +1,15 @@
-from sqlalchemy import create_engine, Column, Integer, String, Date, Text, Boolean, DECIMAL, ForeignKey
+from sqlalchemy import create_engine, Column, Integer, String, Date, Text, Boolean, DECIMAL, ForeignKey, Index
 from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+# Modello per la tabella dei giochi (Games)
 class Game(Base):
     __tablename__ = 'games'
 
-    app_id = Column(String(50), primary_key=True)
-    name = Column(String(255))
+    app_id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), index=True)  # Indice per la ricerca dei giochi per nome
     release_date = Column(Date)
     estimated_owners = Column(String(50))
     peak_ccu = Column(Integer)
@@ -17,8 +18,6 @@ class Game(Base):
     dlc_count = Column(Integer)
     detailed_description = Column(Text)
     short_description = Column(Text)
-    supported_languages = Column(Text)
-    full_audio_languages = Column(Text)
     reviews = Column(Text)
     header_image = Column(String(500))
     website = Column(String(500))
@@ -41,69 +40,141 @@ class Game(Base):
     median_playtime = Column(Integer)
     median_playtime_2weeks = Column(Integer)
 
+    # Relazioni molti a molti
+    developers = relationship('Developer', secondary='game_developers')
+    genres = relationship('Genre', secondary='game_genres')
+    publishers = relationship('Publisher', secondary='game_publishers')
+    tags = relationship('Tag', secondary='game_tags')
+    
+    # Relazioni aggiuntive per le lingue
+    supported_languages = relationship('Language', secondary='game_supported_languages')
+    full_audio_languages = relationship('Language', secondary='game_full_audio_languages')
+
+class Language(Base):
+    __tablename__ = 'languages'
+
+    language_id = Column(Integer, primary_key=True, autoincrement=True)
+    language = Column(String(255))
+    name = Column(String(255), unique=True, index=True)  # Indice per la ricerca delle lingue
+
+class GameSupportedLanguage(Base):
+    __tablename__ = 'game_supported_languages'
+
+    app_id = Column(Integer, ForeignKey('games.app_id'), primary_key=True)
+    language_id = Column(Integer, ForeignKey('languages.language_id'), primary_key=True)
+
+# Indice per la relazione tra giochi e lingue supportate
+Index('idx_game_supported_language', GameSupportedLanguage.app_id, GameSupportedLanguage.language_id)
+
+class GameFullAudioLanguage(Base):
+    __tablename__ = 'game_full_audio_languages'
+
+    app_id = Column(Integer, ForeignKey('games.app_id'), primary_key=True)
+    language_id = Column(Integer, ForeignKey('languages.language_id'), primary_key=True)
+
+# Indice per la relazione tra giochi e lingue audio
+Index('idx_game_full_audio_language', GameFullAudioLanguage.app_id, GameFullAudioLanguage.language_id)
+
+# Modello per gli sviluppatori (Developers)
 class Developer(Base):
     __tablename__ = 'developers'
 
     developer_id = Column(Integer, primary_key=True, autoincrement=True)
-    app_id = Column(String(50), ForeignKey('games.app_id'))
-    name = Column(String(255))
-    game = relationship('Game')
+    name = Column(String(255), index=True)  # Indice per la ricerca degli sviluppatori
 
+# Modello per i generi (Genres)
 class Genre(Base):
     __tablename__ = 'genres'
 
     genre_id = Column(Integer, primary_key=True, autoincrement=True)
-    app_id = Column(String(50), ForeignKey('games.app_id'))
-    name = Column(String(255))
-    game = relationship('Game')
+    name = Column(String(255), index=True)  # Indice per la ricerca dei generi
+
+# Modello per gli editori (Publishers)
+class Publisher(Base):
+    __tablename__ = 'publishers'
+
+    publisher_id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), index=True)  # Indice per la ricerca degli editori
+
+# Modello per i tag (Tags)
+class Tag(Base):
+    __tablename__ = 'tags'
+
+    tag_id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), index=True)  # Indice per la ricerca dei tag
 
 class Movie(Base):
     __tablename__ = 'movies'
 
     movie_id = Column(Integer, primary_key=True, autoincrement=True)
-    app_id = Column(String(50), ForeignKey('games.app_id'))
+    app_id = Column(Integer, ForeignKey('games.app_id'))
     url = Column(String(500))
     game = relationship('Game')
 
+# Modello per i pacchetti (Packages)
 class Package(Base):
     __tablename__ = 'packages'
 
     package_id = Column(Integer, primary_key=True, autoincrement=True)
-    app_id = Column(String(50), ForeignKey('games.app_id'))
-    title = Column(String(255))
+    app_id = Column(Integer, ForeignKey('games.app_id')) 
+    title = Column(String(255), index=True)  # Indice per la ricerca dei pacchetti
     description = Column(Text)
     game = relationship('Game')
 
-class Publisher(Base):
-    __tablename__ = 'publishers'
-
-    publisher_id = Column(Integer, primary_key=True, autoincrement=True)
-    app_id = Column(String(50), ForeignKey('games.app_id'))
-    name = Column(String(255))
-    game = relationship('Game')
-
+# Modello per gli screenshot (Screenshots)
 class Screenshot(Base):
     __tablename__ = 'screenshots'
 
     screenshot_id = Column(Integer, primary_key=True, autoincrement=True)
-    app_id = Column(String(50), ForeignKey('games.app_id'))
+    app_id = Column(Integer, ForeignKey('games.app_id')) 
     url = Column(String(500))
     game = relationship('Game')
 
+# Modello per i subpacchetti (Subpackages)
 class Subpackage(Base):
     __tablename__ = 'subpackages'
 
     subpackage_id = Column(Integer, primary_key=True, autoincrement=True)
     package_id = Column(Integer, ForeignKey('packages.package_id'))
-    title = Column(String(255))
+    title = Column(String(255), index=True)  # Indice per la ricerca dei subpacchetti
     description = Column(Text)
     price = Column(DECIMAL(10, 2))
     package = relationship('Package')
 
-class Tag(Base):
-    __tablename__ = 'tags'
+# Tabelle intermedie per le relazioni molti a molti
+class GameDeveloper(Base):
+    __tablename__ = 'game_developers'
 
-    tag_id = Column(Integer, primary_key=True, autoincrement=True)
-    app_id = Column(String(50), ForeignKey('games.app_id'))
-    name = Column(String(255))
-    game = relationship('Game')
+    app_id = Column(Integer, ForeignKey('games.app_id'), primary_key=True) 
+    developer_id = Column(Integer, ForeignKey('developers.developer_id'), primary_key=True)
+
+# Indici per la tabella di relazione molti a molti tra giochi e sviluppatori
+Index('idx_game_developer', GameDeveloper.app_id, GameDeveloper.developer_id)
+
+class GameGenre(Base):
+    __tablename__ = 'game_genres'
+
+    app_id = Column(Integer, ForeignKey('games.app_id'), primary_key=True)  
+    genre_id = Column(Integer, ForeignKey('genres.genre_id'), primary_key=True)
+
+# Indici per la tabella di relazione molti a molti tra giochi e generi
+Index('idx_game_genre', GameGenre.app_id, GameGenre.genre_id)
+
+class GamePublisher(Base):
+    __tablename__ = 'game_publishers'
+
+    app_id = Column(Integer, ForeignKey('games.app_id'), primary_key=True) 
+    publisher_id = Column(Integer, ForeignKey('publishers.publisher_id'), primary_key=True)
+
+# Indici per la tabella di relazione molti a molti tra giochi e editori
+Index('idx_game_publisher', GamePublisher.app_id, GamePublisher.publisher_id)
+
+class GameTag(Base):
+    __tablename__ = 'game_tags'
+
+    app_id = Column(Integer, ForeignKey('games.app_id'), primary_key=True) 
+    tag_id = Column(Integer, ForeignKey('tags.tag_id'), primary_key=True)
+    tag_value = Column(Integer)
+
+# Indici per la tabella di relazione molti a molti tra giochi e tag
+Index('idx_game_tag', GameTag.app_id, GameTag.tag_id)

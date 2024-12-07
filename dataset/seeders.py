@@ -2,7 +2,10 @@ import json
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from tables import Game, Developer, Genre, Movie, Package, Publisher, Screenshot, Subpackage, Tag
+from datetime import datetime
+from dateutil import parser
+from tables import *
+from sqlalchemy.exc import IntegrityError
 
 # Configura la connessione al database
 DATABASE_URL = 'mysql+pymysql://root:Jawalter2020-@localhost/steam_library'
@@ -13,95 +16,231 @@ session = Session()
 def load_json_data(filepath):
     """Carica i dati dal file JSON."""
     if os.path.exists(filepath):
-        with open(filepath, 'r', encoding='utf-8') as file:
-            try:
+        try:
+            with open(filepath, 'r', encoding='utf-8') as file:
                 return json.load(file)
-            except json.JSONDecodeError as e:
-                print(f"Errore nel parsing del file JSON: {e}")
-                return None
+        except json.JSONDecodeError as e:
+            print(f"Errore nel parsing del file JSON: {e}")
+        except Exception as e:
+            print(f"Errore nell'aprire il file: {e}")
     else:
         print(f"Il file {filepath} non esiste.")
-        return None
+    return None
+
+def safe_get(value):
+    """Restituisce None o NaN per valori mancanti o vuoti."""
+    if isinstance(value, str) and value.strip() == '':
+        return None  # Sostituisce stringhe vuote con None
+    elif isinstance(value, (int, float)) and (value is None or value == ''):
+        return float('nan')  # Sostituisce i valori numerici mancanti con NaN
+    return value
+
+def seed_game_data(game):
+    """Aggiungi i dati di un gioco nel database."""
+
+    print(game.get('name'))
+
+    # Recupero e conversione della data
+    release_date = safe_get(game.get('release_date'))
+
+    if release_date:
+        release_date = release_date.replace(',', '')  # Rimuove la virgola
+        
+        try:
+            # Tenta di fare il parsing con il formato specifico
+            release_date = datetime.strptime(release_date, "%b %d %Y")
+        except ValueError:
+            # Se fallisce, usa il parser di dateutil
+            release_date = parser.parse(release_date)
+
+    new_game = Game(
+        name=safe_get(game.get('name')),
+        release_date=release_date,
+        estimated_owners=safe_get(game.get('estimated_owners')),
+        peak_ccu=safe_get(game.get('peak_ccu')),
+        required_age=safe_get(game.get('required_age')),
+        price=safe_get(game.get('price')),
+        dlc_count=safe_get(game.get('dlc_count')),
+        detailed_description=safe_get(game.get('detailed_description')),
+        short_description=safe_get(game.get('short_description')),
+        reviews=safe_get(game.get('reviews')),
+        header_image=safe_get(game.get('header_image')),
+        website=safe_get(game.get('website')),
+        support_url=safe_get(game.get('support_url')),
+        support_email=safe_get(game.get('support_email')),
+        support_windows=safe_get(game.get('windows')),
+        support_mac=safe_get(game.get('mac')),
+        support_linux=safe_get(game.get('linux')),
+        metacritic_score=safe_get(game.get('metacritic_score')),
+        metacritic_url=safe_get(game.get('metacritic_url')),
+        user_score=safe_get(game.get('user_score')),
+        positive=safe_get(game.get('positive')),
+        negative=safe_get(game.get('negative')),
+        score_rank=safe_get(game.get('score_rank')),
+        achievements=safe_get(game.get('achievements')),
+        recommendations=safe_get(game.get('recommendations')),
+        notes=safe_get(game.get('notes')),
+        average_playtime=safe_get(game.get('average_playtime_forever')),
+        average_playtime_2weeks=safe_get(game.get('average_playtime_2weeks')),
+        median_playtime=safe_get(game.get('median_playtime_forever')),
+        median_playtime_2weeks=safe_get(game.get('median_playtime_2weeks'))
+    )
+    session.add(new_game)
+    return new_game
+
+def seed_package_data(game, new_game):
+    """Aggiungi i pacchetti e subpacchetti di un gioco nel database."""
+    for package in game.get('packages', []):
+        new_package = Package(
+            app_id=new_game.app_id,
+            title=safe_get(package.get('title')),
+            description=safe_get(package.get('description'))
+        )
+        session.add(new_package)
+
+        for subpackage in package.get('subpackages', []):
+            new_subpackage = Subpackage(
+                package_id=new_package.package_id,
+                title=safe_get(subpackage.get('title')),
+                description=safe_get(subpackage.get('description')),
+                price=safe_get(subpackage.get('price'))
+            )
+            session.add(new_subpackage)
+
+def seed_developers(game):
+    """Aggiungi sviluppatori di un gioco nel database."""
+    developers = []
+    for dev in game.get('developers', []):
+        existing_dev = session.query(Developer).filter_by(name=dev).first()
+        if not existing_dev:
+            new_dev = Developer(name=dev)
+            session.add(new_dev)
+            session.flush()
+            developers.append(new_dev)
+        else:
+            developers.append(existing_dev)
+    return developers
+
+def seed_genres(game):
+    """Aggiungi generi di un gioco nel database."""
+    genres = []
+    for genre in game.get('genres', []):
+        existing_genre = session.query(Genre).filter_by(name=genre).first()
+        if not existing_genre:
+            new_genre = Genre(name=genre)
+            session.add(new_genre)
+            session.flush()
+            genres.append(new_genre)
+        else:
+            genres.append(existing_genre)
+    return genres
+
+def seed_movies_and_screenshots(game, new_game):
+    """Aggiungi film e screenshot di un gioco nel database."""
+    movies = [Movie(app_id=new_game.app_id, url=safe_get(movie)) for movie in game.get('movies', [])]
+    screenshots = [Screenshot(app_id=new_game.app_id, url=safe_get(screenshot)) for screenshot in game.get('screenshots', [])]
+    session.bulk_save_objects(movies)
+    session.bulk_save_objects(screenshots)
+
+def seed_publishers_and_tags(game):
+    """Aggiungi publisher e tag di un gioco nel database."""
+    publishers = []
+    tags = []
+    for publisher in game.get('publishers', []):
+        existing_pub = session.query(Publisher).filter_by(name=publisher).first()
+        if not existing_pub:
+            new_pub = Publisher(name=publisher)
+            session.add(new_pub)
+            session.flush()
+            publishers.append(new_pub)
+        else:
+            publishers.append(existing_pub)
+
+    if isinstance(game.get('tags'), dict):
+        for tag, tag_value in game.get('tags', {}).items():
+            existing_tag = session.query(Tag).filter_by(name=tag).first()
+            if not existing_tag:
+                new_tag = Tag(name=str(tag))
+                session.add(new_tag)
+                session.flush() 
+                tags.append([new_tag, tag_value, tag])
+            else:
+                tags.append([existing_tag, tag_value, tag])
+
+    return publishers, tags
+
+def link_game_to_developers_genres_publishers_tags(new_game, developers, genres, publishers, tags):
+    """Collega il gioco agli sviluppatori, generi, editori e tag (many-to-many)."""
+    
+    app_id = new_game.app_id
+    game_developers = [GameDeveloper(app_id=app_id, developer_id=developer.developer_id) for developer in developers]
+    game_genres = [GameGenre(app_id=app_id, genre_id=genre.genre_id) for genre in genres]
+    game_publishers = [GamePublisher(app_id=app_id, publisher_id=publisher.publisher_id) for publisher in publishers]
+    game_tags = [GameTag(app_id=app_id, tag_id=tag[0].tag_id, tag_value=tag[1]) for tag in tags]
+
+    # Usa bulk_save_objects per inserire tutte le voci in un'unica operazione
+    session.bulk_save_objects(game_developers + game_genres + game_publishers + game_tags)
+
+
+def seed_languages(game, new_game):
+    """Aggiungi lingue supportate e lingue audio complete."""
+    supported_languages = []
+    for lang in game.get('supported_languages', []):
+        existing_language = session.query(Language).filter_by(name=lang).first()
+        if not existing_language:
+            new_language = Language(name=lang)
+            session.add(new_language)
+            session.flush() 
+            supported_languages.append(new_language)
+        else:
+            supported_languages.append(existing_language)
+
+    full_audio_languages = []
+    for lang in game.get('full_audio_languages', []):
+        existing_language = session.query(Language).filter_by(name=lang).first()
+        if not existing_language:
+            new_language = Language(name=lang)
+            session.add(new_language)
+            session.flush() 
+            full_audio_languages.append(new_language)
+        else:
+            full_audio_languages.append(existing_language)
+
+    app_id = new_game.app_id
+    supported_languages_list = [GameSupportedLanguage(app_id=app_id, language_id=language.language_id) for language in supported_languages]
+    full_audio_languages_list = [GameFullAudioLanguage(app_id=app_id, language_id=language.language_id) for language in full_audio_languages]
+
+    # Usa bulk_save_objects per inserire tutte le lingue in un'unica operazione
+    session.bulk_save_objects(supported_languages_list + full_audio_languages_list)
 
 def seed_data(dataset):
     """Esegui il seeding dei dati nel database."""
-    for app_id, game in dataset.items():
-        # Aggiungi il gioco
-        new_game = Game(
-            app_id=app_id,
-            name=game['name'],
-            release_date=game['release_date'],
-            estimated_owners=game['estimated_owners'],
-            peak_ccu=game['peak_ccu'],
-            required_age=game['required_age'],
-            price=game['price'],
-            dlc_count=game['dlc_count'],
-            detailed_description=game['detailed_description'],
-            short_description=game['short_description'],
-            supported_languages=game['supported_languages'],
-            full_audio_languages=game['full_audio_languages'],
-            reviews=game['reviews'],
-            header_image=game['header_image'],
-            website=game['website'],
-            support_url=game['support_url'],
-            support_email=game['support_email'],
-            support_windows=game['windows'],
-            support_mac=game['mac'],
-            support_linux=game['linux'],
-            metacritic_score=game['metacritic_score'],
-            metacritic_url=game['metacritic_url'],
-            user_score=game['user_score'],
-            positive=game['positive'],
-            negative=game['negative'],
-            score_rank=game['score_rank'],
-            achievements=game['achievements'],
-            recommendations=game['recommendations'],
-            notes=game['notes'],
-            average_playtime=game['average_playtime_forever'],
-            average_playtime_2weeks=game['average_playtime_2weeks'],
-            median_playtime=game['median_playtime_forever'],
-            median_playtime_2weeks=game['median_playtime_2weeks']
-        )
-        session.add(new_game)
-
-        # Aggiungi developers, genres, movies, ecc.
-        developers = [Developer(app_id=app_id, name=dev) for dev in game['developers']]
-        genres = [Genre(app_id=app_id, name=genre) for genre in game['genres']]
-        movies = [Movie(app_id=app_id, url=movie) for movie in game['movies']]
-        publishers = [Publisher(app_id=app_id, name=publisher) for publisher in game['publishers']]
-        screenshots = [Screenshot(app_id=app_id, url=screenshot) for screenshot in game['scrennshots']]
-        tags = [Tag(app_id=app_id, name=tag) for tag in game['tags']]
-
-        session.bulk_save_objects(developers + genres + movies + publishers + screenshots + tags)
-
-        # Gestione dei pacchetti e subpacchetti
-        packages = []
-        subpackages = []
-        for package in game['packages']:
-            new_package = Package(app_id=app_id, title=package['title'], description=package['description'])
-            packages.append(new_package)
-
-            for sub in package['subs']:
-                new_subpackage = Subpackage(
-                    package_id=new_package.package_id,
-                    title=sub['text'],
-                    description=sub['description'],
-                    price=sub['price']
-                )
-                subpackages.append(new_subpackage)
-
-        session.bulk_save_objects(packages + subpackages)
-
-        # Commit ogni 1000 record (puoi regolare questo valore)
-        if len(session.new) >= 1000:
-            session.commit()
+    
+    for game in dataset.values():
+        try:
+            new_game = seed_game_data(game)
+            seed_package_data(game, new_game)
+            developers = seed_developers(game)
+            genres = seed_genres(game)
+            seed_movies_and_screenshots(game, new_game)
+            publishers, tags = seed_publishers_and_tags(game)
+            link_game_to_developers_genres_publishers_tags(new_game, developers, genres, publishers, tags)
+            seed_languages(game, new_game)
+        except IntegrityError:
+            session.rollback()
+        
+        session.commit()
 
     # Commit finale
     session.commit()
 
 def run_seeding():
     """Esegui il seeding."""
-    dataset = load_json_data('raw/games.json')
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    json_file_path = os.path.join(script_dir, 'raw', 'games.json')
+
+    print(f"Percorso completo del file JSON: {json_file_path}")
+    dataset = load_json_data(json_file_path)
     if dataset:
         seed_data(dataset)
 
