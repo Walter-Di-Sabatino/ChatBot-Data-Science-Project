@@ -6,6 +6,7 @@ from datetime import datetime
 from dateutil import parser
 from database.models import *
 from sqlalchemy.exc import IntegrityError
+import re
 
 # Configura la connessione al database
 DATABASE_URL = 'mysql+pymysql://root:Jawalter2020-@localhost/steam_library'
@@ -35,10 +36,28 @@ def safe_get(value):
         return float('nan')  # Sostituisce i valori numerici mancanti con NaN
     return value
 
-def seed_game_data(game):
-    """Aggiungi i dati di un gioco nel database."""
+def is_valid_game_name(name):
+    """Verifica che il nome del gioco contenga solo caratteri latini, numeri e spazi."""
+    if name is None:
+        return False
+    # Regex che permette solo caratteri latini, numeri e spazi
+    return bool(re.match(r'^[A-Za-z0-9\s\.,;\'"!&\(\)\[\]\{\}\-–_+?\/]*$', name))
 
-    print(game.get('name'))
+def seed_game_data(game):
+    """Aggiungi i dati di un gioco nel database solo se supporta l'inglese e il nome è valido."""
+    
+    # Controlla se l'inglese è nelle lingue supportate
+    supported_languages = game.get('supported_languages', [])
+    if 'English' not in supported_languages:
+        return None  # Salta il gioco se non supporta l'inglese
+    
+    # Verifica che il nome del gioco contenga solo caratteri validi
+    game_name = safe_get(game.get('name'))
+    if not is_valid_game_name(game_name):
+        print(f"Nome del gioco '{game_name}' non valido (contenuto non latino). Salto il gioco.")
+        return None  # Salta il gioco se il nome non è valido
+    
+    print(game_name)
 
     # Recupero e conversione della data
     release_date = safe_get(game.get('release_date'))
@@ -54,7 +73,7 @@ def seed_game_data(game):
             release_date = parser.parse(release_date)
 
     new_game = Game(
-        name=safe_get(game.get('name')),
+        name=game_name,
         release_date=release_date,
         estimated_owners=safe_get(game.get('estimated_owners')),
         peak_ccu=safe_get(game.get('peak_ccu')),

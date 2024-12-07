@@ -66,8 +66,14 @@ class ActionProvideGameInfo(Action):
 
         # Se il gioco è trovato, aggiorna gli slot con i dettagli
         game_name = game.name
-        release_date = game.release_date
+        release_date = game.release_date.strftime("%Y-%m-%d") if game.release_date else None  # Convert to string
         price = game.price
+
+        dispatcher.utter_message(template="utter_game_info",
+            game_name=game_name,
+            release_date=release_date,
+            price=price
+            )
 
         # Ritorna gli SlotSet con i nuovi valori
         return [
