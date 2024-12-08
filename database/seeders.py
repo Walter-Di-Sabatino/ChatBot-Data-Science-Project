@@ -4,12 +4,24 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 from dateutil import parser
-from database.models import *
+from dotenv import load_dotenv
+from models import *
 from sqlalchemy.exc import IntegrityError
 import re
 
-# Configura la connessione al database
-DATABASE_URL = 'mysql+pymysql://root:Jawalter2020-@localhost/steam_library'
+# Carica le variabili di ambiente dal file .env
+load_dotenv()
+
+# Recupera gli elementi dell'URL del database
+DB_USER = os.getenv("DB_USER", "root")  # Usa "root" come valore predefinito
+DB_PASSWORD = os.getenv("DB_PASSWORD", "Jawalter2020-")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_NAME = os.getenv("DB_NAME", "steam_library")
+DB_DRIVER = os.getenv("DB_DRIVER", "mysql+pymysql")
+
+# Costruisci l'URL del database
+DATABASE_URL = f"{DB_DRIVER}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
+
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -41,7 +53,7 @@ def is_valid_game_name(name):
     if name is None:
         return False
     # Regex che permette solo caratteri latini, numeri e spazi
-    return bool(re.match(r'^[A-Za-z0-9\s\.,;\'"!&\(\)\[\]\{\}\-–_+?\/]*$', name))
+    return bool(re.match(r"^[a-zA-Z0-9\s!\"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~®™]*$", name))
 
 def seed_game_data(game):
     """Aggiungi i dati di un gioco nel database solo se supporta l'inglese e il nome è valido."""
@@ -58,6 +70,8 @@ def seed_game_data(game):
         return None  # Salta il gioco se il nome non è valido
     
     print(game_name)
+
+    game_name = re.sub(r"[®™]", "", game_name)
 
     # Recupero e conversione della data
     release_date = safe_get(game.get('release_date'))
@@ -238,6 +252,8 @@ def seed_data(dataset):
     for game in dataset.values():
         try:
             new_game = seed_game_data(game)
+            if new_game is None:
+                continue 
             seed_package_data(game, new_game)
             developers = seed_developers(game)
             genres = seed_genres(game)

@@ -14,18 +14,18 @@ nlu:
     - Is [Minecraft](game_name) still available for purchase?
     - Tell me more about [The Elder Scrolls V: Skyrim](game_name).
     - What was the release date of [Overwatch](game_name)?
-    - How much does [GTA V](game_name) cost now?
-    - Is [League of Legends](game_name) free to play?
+    - How much does [Enter th Gungeon](game_name) cost now?
+    - Is [War Thunder](game_name) free to play?
     - When was [Assassin’s Creed Valhalla](game_name) released?
     - What is the cost of [Call of Duty: Modern Warfare 2](game_name)?
-    - Is [Fortnite](game_name) free to download?
+    - Is [Far Cry 5](game_name) free to download?
     - Can you tell me when [Final Fantasy XV](game_name) was released?
-    - How much does [The Last of Us Part II](game_name) cost?
+    - How much does [The Last of Us Part I](game_name) cost?
     - Was [Sekiro: Shadows Die Twice](game_name) released recently?
     - When did [Monster Hunter: World](game_name) launch?
-    - Is [Bloodborne](game_name) free or paid?
+    - Is [Subnautica](game_name) free or paid?
     - Tell me about the price of [Apex Legends](game_name).
-    - Is [World of Warcraft](game_name) subscription-based?
+    - Is [Grand Theft Auto V](game_name) subscription-based?
 
 - intent: developer_info
   examples: |

@@ -1,3 +1,4 @@
+import csv
 from typing import Any, Text, Dict, List
 from dotenv import load_dotenv
 import os
@@ -7,6 +8,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import create_engine
 from database.models import Game, Developer, Publisher, Genre, Package
 from rasa_sdk.events import SlotSet
+from thefuzz import process  # Assicurati di installare fuzzywuzzy o rapidfuzz
 
 # Carica le variabili di ambiente dal file .env
 load_dotenv()
@@ -52,35 +54,44 @@ class ActionProvideGameInfo(Action):
             dispatcher.utter_message(text="I need the name of the game to provide details.")
             return []
 
-        # Connessione al database e recupero del gioco
-        session = get_session()
-        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
-        session.close()
+        with open('lookup_files/game_names.csv', mode='r', encoding='utf-8') as file:
+            csv_reader = csv.DictReader(file)  # Usa DictReader per avere accesso alle colonne per nome
+            all_game_names = [row['game_name'].lower() for row in csv_reader]  # Estrai i nomi dei giochi
 
-        print(game)
-
-        # Se il gioco non è trovato
-        if not game:
-            dispatcher.utter_message(text=f"No details found for the game '{game_name}'.")
+        # Cerca se il nome del gioco esiste esattamente nel file
+        if game_name.lower() not in all_game_names:
+            dispatcher.utter_message(text=f"Sorry, I couldn't find a game called '{game_name}'.")
             return []
 
-        # Se il gioco è trovato, aggiorna gli slot con i dettagli
-        game_name = game.name
-        release_date = game.release_date.strftime("%Y-%m-%d") if game.release_date else None  # Convert to string
-        price = game.price
+        # Connessione al database
+        session = get_session()  # Ensure this function is defined elsewhere in your code
+        # Cerca il gioco nel database
+        game = session.query(Game).filter(Game.name == game_name).first()
 
-        dispatcher.utter_message(template="utter_game_info",
-            game_name=game_name,
-            release_date=release_date,
-            price=price
+        # Se il gioco è trovato, aggiorna gli slot con i dettagli
+        if game:
+            game_name = game.name
+            release_date = game.release_date.strftime("%Y-%m-%d") if game.release_date else None
+            price = game.price
+
+            dispatcher.utter_message(
+                template="utter_game_info",
+                game_name=game_name,
+                release_date=release_date,
+                price=price
             )
 
-        # Ritorna gli SlotSet con i nuovi valori
-        return [
-            SlotSet("game_name", game_name),
-            SlotSet("release_date", release_date),
-            SlotSet("price", price)
-        ]
+            session.close()  # Close the session after use
+            return [
+                SlotSet("game_name", game_name),
+                SlotSet("release_date", release_date),
+                SlotSet("price", price)
+            ]
+
+        # Se qualcosa va storto e il gioco non è trovato
+        dispatcher.utter_message(text=f"Sorry, I couldn't retrieve details for the game '{game_name}'.")
+        session.close()  # Close the session after use
+        return []
 
 
 class ActionProvideDeveloperInfo(Action):
