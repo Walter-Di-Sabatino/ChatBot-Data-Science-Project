@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker, Session
 from sqlalchemy import create_engine
 from database.models import Game, Developer, Publisher, Genre, Package
 from rasa_sdk.events import SlotSet
-from thefuzz import process  # Assicurati di installare fuzzywuzzy o rapidfuzz
+from rapidfuzz import process 
 
 # Carica le variabili di ambiente dal file .env
 load_dotenv()
@@ -38,192 +38,56 @@ def get_game_by_name(game_name: str) -> Game:
     session.close()
     return game
 
+def fuzzy_find_in_list(item, items_list):
+    lowercase_item_list = [s.lower() for s in items_list]
+
+    similar_item_index = process.extractOne(
+                item.lower(),
+                lowercase_item_list)
+
+    similar_item = items_list[similar_item_index]
+
+    return similar_item
+
 class ActionProvideGameInfo(Action):
     def name(self) -> Text:
         return "action_provide_game_info"
 
     def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+        tracker: Tracker,
+        domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
-        # Recupera i dati dagli slot
+        # Recupera il nome del gioco dallo slot
         game_name = tracker.get_slot("game_name")
-
-        # Se manca il nome del gioco, invia un messaggio di errore
+        
+        # Controlla se è stato fornito un nome di gioco
         if not game_name:
             dispatcher.utter_message(text="I need the name of the game to provide details.")
             return []
 
-        with open('lookup_files/game_names.csv', mode='r', encoding='utf-8') as file:
-            csv_reader = csv.DictReader(file)  # Usa DictReader per avere accesso alle colonne per nome
-            all_game_names = [row['game_name'].lower() for row in csv_reader]  # Estrai i nomi dei giochi
-
-        # Cerca se il nome del gioco esiste esattamente nel file
-        if game_name.lower() not in all_game_names:
-            dispatcher.utter_message(text=f"Sorry, I couldn't find a game called '{game_name}'.")
-            return []
-
-        # Connessione al database
-        session = get_session()  # Ensure this function is defined elsewhere in your code
-        # Cerca il gioco nel database
+        # Connessione al database e recupero delle informazioni sul gioco
+        session = get_session() 
         game = session.query(Game).filter(Game.name == game_name).first()
 
-        # Se il gioco è trovato, aggiorna gli slot con i dettagli
         if game:
-            game_name = game.name
+            # Ottieni i dettagli del gioco
             release_date = game.release_date.strftime("%Y-%m-%d") if game.release_date else None
             price = game.price
 
+            # Invia i dettagli del gioco all'utente
             dispatcher.utter_message(
-                template="utter_game_info",
-                game_name=game_name,
+                response="utter_game_info",
+                game_name=game.name,
                 release_date=release_date,
                 price=price
             )
 
-            session.close()  # Close the session after use
-            return [
-                SlotSet("game_name", game_name),
-                SlotSet("release_date", release_date),
-                SlotSet("price", price)
-            ]
+            # Restituisci gli slot con le informazioni del gioco
+            session.close()
+            return [{"game_name": game.name, "release_date": release_date, "price": price}]
 
-        # Se qualcosa va storto e il gioco non è trovato
-        dispatcher.utter_message(text=f"Sorry, I couldn't retrieve details for the game '{game_name}'.")
-        session.close()  # Close the session after use
+        # Se il gioco non è trovato nel database
+        dispatcher.utter_message(text=f"Sorry, I couldn't retrieve details for the game '{game_name}'. Please check the name and try again.")
+        session.close()
         return []
 
-
-class ActionProvideDeveloperInfo(Action):
-    def name(self) -> Text:
-        return "action_provide_developer_info"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        game_name = tracker.get_slot("game_name")
-        game = get_game_by_name(game_name)
-
-        if game:
-            developers = [developer.name for developer in game.developers]
-            dispatcher.utter_message(text=f"Developers for '{game_name}': {', '.join(developers)}")
-        else:
-            dispatcher.utter_message(text=f"No developer information found for '{game_name}'.")
-
-        return []
-
-class ActionProvidePublisherInfo(Action):
-    def name(self) -> Text:
-        return "action_provide_publisher_info"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        game_name = tracker.get_slot("game_name")
-        game = get_game_by_name(game_name)
-
-        if game:
-            publishers = [publisher.name for publisher in game.publishers]
-            dispatcher.utter_message(text=f"Publishers for '{game_name}': {', '.join(publishers)}")
-        else:
-            dispatcher.utter_message(text=f"No publisher information found for '{game_name}'.")
-
-        return []
-
-class ActionProvideSystemRequirements(Action):
-    def name(self) -> Text:
-        return "action_provide_system_requirements"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        game_name = tracker.get_slot("game_name")
-        game = get_game_by_name(game_name)
-
-        if game:
-            # You can extend this logic for specific system requirements retrieval
-            support_windows = tracker.get_slot("supportWindows")
-            support_mac = tracker.get_slot("supportMac")
-            support_linux = tracker.get_slot("supportLinux")
-            dispatcher.utter_message(
-                text=f"{game_name} supports the following platforms: Windows - {support_windows}, Mac - {support_mac}, Linux - {support_linux}."
-            )
-        else:
-            dispatcher.utter_message(text=f"No system requirements found for '{game_name}'.")
-
-        return []
-
-class ActionProvidePriceInfo(Action):
-    def name(self) -> Text:
-        return "action_provide_price_info"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        game_name = tracker.get_slot("game_name")
-        game = get_game_by_name(game_name)
-
-        if game:
-            price = tracker.get_slot("price")
-            dispatcher.utter_message(text=f"The price for '{game_name}' is {price} USD.")
-        else:
-            dispatcher.utter_message(text=f"No price information found for '{game_name}'.")
-
-        return []
-
-class ActionProvideGenreInfo(Action):
-    def name(self) -> Text:
-        return "action_provide_genre_info"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        game_name = tracker.get_slot("game_name")
-        game = get_game_by_name(game_name)
-
-        if game:
-            genres = [genre.name for genre in game.genres]
-            dispatcher.utter_message(text=f"Genres for '{game_name}': {', '.join(genres)}")
-        else:
-            dispatcher.utter_message(text=f"No genre information found for '{game_name}'.")
-
-        return []
-
-class ActionProvideReviewInfo(Action):
-    def name(self) -> Text:
-        return "action_provide_review_info"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        game_name = tracker.get_slot("game_name")
-        game = get_game_by_name(game_name)
-
-        if game:
-            metacritic_score = tracker.get_slot("metacriticScore")
-            user_score = tracker.get_slot("userScore")
-            dispatcher.utter_message(
-                text=f"Reviews for '{game_name}': Metacritic Score - {metacritic_score}, User Score - {user_score}"
-            )
-        else:
-            dispatcher.utter_message(text=f"No review information found for '{game_name}'.")
-
-        return []
-
-class ActionProvideAchievementsInfo(Action):
-    def name(self) -> Text:
-        return "action_provide_achievements_info"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        game_name = tracker.get_slot("game_name")
-        game = get_game_by_name(game_name)
-
-        if game:
-            achievements = tracker.get_slot("achievements")
-            dispatcher.utter_message(text=f"Achievements for '{game_name}': {achievements}")
-        else:
-            dispatcher.utter_message(text=f"No achievements information found for '{game_name}'.")
-
-        return []
