@@ -5,6 +5,12 @@ from sqlalchemy.orm import sessionmaker
 from datetime import datetime
 from dateutil import parser
 from dotenv import load_dotenv
+
+import sys
+
+# Ottieni la directory principale del progetto
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(project_dir)
 from models import *
 from sqlalchemy.exc import IntegrityError
 import re
@@ -64,7 +70,7 @@ def seed_game_data(game):
         return None  # Salta il gioco se non supporta l'inglese
     
     detailed_description = game.get('detailed_description')
-    if len(detailed_description) > 65535:
+    if len(detailed_description.encode('utf-8')) > 65535:
         return None
     
     # Verifica che il nome del gioco contenga solo caratteri validi
@@ -225,7 +231,7 @@ def link_game_to_developers_genres_categories_publishers_tags(new_game, develope
     
     app_id = new_game.app_id
     game_developers = [GameDeveloper(app_id=app_id, developer_id=developer.developer_id) for developer in developers]
-    game_categories = [GameDeveloper(app_id=app_id, category_id=category.category_id) for category in categories]
+    game_categories = [GameCategory(app_id=app_id, category_id=category.category_id) for category in categories]
     game_genres = [GameGenre(app_id=app_id, genre_id=genre.genre_id) for genre in genres]
     game_publishers = [GamePublisher(app_id=app_id, publisher_id=publisher.publisher_id) for publisher in publishers]
     game_tags = [GameTag(app_id=app_id, tag_id=tag[0].tag_id, tag_value=tag[1]) for tag in tags]

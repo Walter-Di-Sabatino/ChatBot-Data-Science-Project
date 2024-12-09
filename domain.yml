@@ -2,6 +2,7 @@ version: "3.1"
 
 entities:
   - game_name
+  - genre_name
 
 slots:
   game_name:
@@ -37,19 +38,23 @@ intents:
   - mood_unhappy
   - bot_challenge
   - game_info
-  - developer_info
-  - publisher_info
-  - system_requirements
-  - price_info
-  - genre_info
-  - review_info
-  - achievements_info
+  - get_reccomendation
+  - ask_reccomendation
+
 
 responses:
   utter_game_info:
     - text: "{game_name} was released on {release_date}. It has a costs of {price} USD."
 
+  utter_ask_interest:
+    - text: "What type of games are you interested in?"
+    - text: "Can you tell me which genres of games you like?"
+    - text: "What are your favorite types of games?"
+    - text: "Are there any specific genres or themes you prefer when playing games?"
   
+  utter_greet:
+  - text: "Hi, I'm even help finding a game that suits you!"
+
   utter_cheer_up:
     - text: "Here is something to cheer you up:"
       image: "https://i.imgur.com/nGF1K8f.jpg"
@@ -67,6 +72,7 @@ responses:
     - text: "I am a bot, powered by Rasa."
 
 actions:
+  - utter_ask_interest
   - action_provide_game_info
   - action_provide_reccomendation
 
@@ -78,3 +84,7 @@ nlu:
   - lookup: game_names
     file: "lookup_files/game_names.csv"
     entity: game_name
+
+  - lookup: tags_names
+    file: "lookup_files/tags_names.csv"
+    entity: genre_name

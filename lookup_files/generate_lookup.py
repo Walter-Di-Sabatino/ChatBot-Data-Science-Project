@@ -30,22 +30,32 @@ def extract_and_save_names(json_file, csv_file, num_names=20000):
 
     print(f"{len(random_names)} names have been saved to {csv_file}")
 
+
 def extract_and_save_field(json_file, csv_file, field):
     """Estrai e salva valori unici da un campo specifico in un file CSV."""
     with open(json_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
 
-    # Estrai i valori unici dal campo specificato
-    values = set(value for game in data.values() for value in game.get(field, []))
+    # Estrai i valori unici dal campo specificato, facendo il confronto senza case-sensitive e senza spazi,
+    # ma salvando il valore originale nel CSV
+    seen_values = set()
+    values_to_save = []
+
+    for game in data.values():
+        for value in game.get(field, []):
+            normalized_value = value.replace(" ", "").lower()  # Normalizza (senza spazi e case-insensitive)
+            if normalized_value not in seen_values:
+                seen_values.add(normalized_value)
+                values_to_save.append(value)  # Aggiungi il valore originale
 
     # Salva i valori unici in un file CSV
     with open(csv_file, 'w', newline='', encoding='utf-8') as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow([f'{field}_name'])  # Header del CSV
-        for value in sorted(values):
+        for value in sorted(values_to_save):
             writer.writerow([value])
 
-    print(f"{len(values)} unique {field}s have been saved to {csv_file}")
+    print(f"{len(values_to_save)} unique {field}s have been saved to {csv_file}")
 
 file = 'database/dataset/games.json'
 
@@ -55,5 +65,5 @@ file = 'database/dataset/games.json'
 
 # Estrarre e salvare generi, categorie e tag
 # extract_and_save_field(file, 'lookup_files/genres_names.csv', 'genres')
-# extract_and_save_field(file, 'lookup_files/categories._namescsv', 'categories')
-extract_and_save_field(file, 'lookup_files/tags_names.csv', 'tags')
+# extract_and_save_field(file, 'lookup_files/categories._names.csv', 'categories')
+# extract_and_save_field(file, 'lookup_files/tags_names.csv', 'tags')

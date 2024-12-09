@@ -4,6 +4,9 @@ from sqlalchemy import pool
 from alembic import context
 from dotenv import load_dotenv
 import os
+from sqlalchemy.ext.declarative import declarative_base
+
+Base = declarative_base()
 
 import pymysql
 
@@ -35,7 +38,7 @@ if config.config_file_name is not None:
 
 # add your model's MetaData object here
 # for 'autogenerate' support
-from database.models import Base  # Assicurati che 'Base' sia correttamente importato
+from models import Base 
 target_metadata = Base.metadata
 
 # other values from the config, defined by the needs of env.py,

@@ -27,8 +27,35 @@ nlu:
     - Tell me about the price of [Apex Legends](game_name).
     - Is [Grand Theft Auto V](game_name) subscription-based?
 
+- intent: ask_reccomendation
+  examples: |
+    - Can you recommend some games?
+    - Do you have any good game suggestions?
+    - I'm looking for something new to play, any ideas?
+    - What games would you recommend?
+    - What are some interesting games right now?
+    - I want to start a new game, what do you suggest?
+    - Do you know any games worth trying?
+    - Are there any must-play games you can think of?
+    - Can you give me some suggestions for games to try?
+    - I'd love something fun to play, any recommendations?
+    - What would you suggest for passing the time?
+    - Which games are popular these days?
+    - I'd like to discover a new game, any ideas?
+    - Can you suggest some universally liked games?
+    - What games are really worth playing?
+
 - intent: get_reccomendation
   examples: |
+    - I’m open to anything! I like trying new games, so I’m up for whatever you suggest.
+    - I’m not sure yet, maybe something that’s popular right now or highly recommended.
+    - I’m just looking for something fun to play, don’t really have a specific type in mind.
+    - I haven’t decided on a genre yet, I just want to find something enjoyable to pass the time.
+    - I’m in the mood for something different, not really sure what yet.
+    - I’m up for any game, as long as it’s fun and engaging.
+    - I’m just looking for something new and exciting to dive into.
+    - I don’t have a specific type in mind right now.
+    - I’m flexible! If it’s a good game, I’m down to try it.
     - Reccomend me some [action](genre_name) games.
     - Can you suggest any [RPG](genre_name) games?
     - I'm looking for good [horror](genre_name) games.
