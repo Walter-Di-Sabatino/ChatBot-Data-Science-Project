@@ -38,8 +38,8 @@ intents:
   - mood_unhappy
   - bot_challenge
   - game_info
-  - get_reccomendation
-  - ask_reccomendation
+  - get_recommendation
+  - ask_recommendation
 
 
 responses:
@@ -74,7 +74,7 @@ responses:
 actions:
   - utter_ask_interest
   - action_provide_game_info
-  - action_provide_reccomendation
+  - action_provide_recommendation
 
 session_config:
   session_expiration_time: 60

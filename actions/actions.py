@@ -88,18 +88,17 @@ class ActionProvideGameInfo(Action):
                 price=price
             )
 
-            # Restituisci gli slot con le informazioni del gioco
             session.close()
-            return [{"game_name": game.name, "release_date": release_date, "price": price}]
+            return [{"game_name": None, "release_date": None, "price": None}]
 
         # Se il gioco non è trovato nel database
         dispatcher.utter_message(text=f"Sorry, I couldn't retrieve details for the game '{game_name}'. Please check the name and try again.")
         session.close()
-        return []
+        return [{"game_name": None, "release_date": None, "price": None}]
 
-class ActionProvideGenreReccomendationo(Action):
+class ActionProvideGenreRecommendationo(Action):
     def name(self) -> Text:
-        return "action_provide_reccomendation"
+        return "action_provide_recommendation"
 
     def run(self, dispatcher: CollectingDispatcher,
         tracker: Tracker,
@@ -144,7 +143,7 @@ class ActionProvideGenreReccomendationo(Action):
             unique_game_ids = [game_id[0] for game_id in game_ids]
 
             # Recupera i giochi con gli app_id trovati
-            games = session.query(Game).filter(Game.game_id.in_(unique_game_ids)).all()
+            games = session.query(Game).filter(Game.app_id.in_(unique_game_ids)).all()
 
             # Calcoliamo il punteggio per ogni gioco
             games_with_scores = [(game, get_game_score(game)) for game in games]
@@ -176,16 +175,16 @@ class ActionProvideGenreReccomendationo(Action):
 
             # Stampa i giochi e i loro punteggi
             for game in top_games_with_developers:
-                response += f"\n {game[0].name} developed by: "
-                response += ", ".join(game[1])
+                response += f"\n{game[0].name} developed by: "
+                response += ", ".join(str(developer[0]) for developer in game[1])
             
             dispatcher.utter_message(text=response)
-            return []
+            return [SlotSet("genre_name", None)]
 
         else:
             # inserire caso in cui non ha inserito generi l'utente
             print()
 
-        return []
+        return [SlotSet("genre_name", None)]
     
 

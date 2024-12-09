@@ -27,7 +27,7 @@ nlu:
     - Tell me about the price of [Apex Legends](game_name).
     - Is [Grand Theft Auto V](game_name) subscription-based?
 
-- intent: ask_reccomendation
+- intent: ask_recommendation
   examples: |
     - Can you recommend some games?
     - Do you have any good game suggestions?
@@ -45,7 +45,7 @@ nlu:
     - Can you suggest some universally liked games?
     - What games are really worth playing?
 
-- intent: get_reccomendation
+- intent: get_recommendation
   examples: |
     - I’m open to anything! I like trying new games, so I’m up for whatever you suggest.
     - I’m not sure yet, maybe something that’s popular right now or highly recommended.
@@ -56,7 +56,7 @@ nlu:
     - I’m just looking for something new and exciting to dive into.
     - I don’t have a specific type in mind right now.
     - I’m flexible! If it’s a good game, I’m down to try it.
-    - Reccomend me some [action](genre_name) games.
+    - Recommend me some [action](genre_name) games.
     - Can you suggest any [RPG](genre_name) games?
     - I'm looking for good [horror](genre_name) games.
     - What are the best [adventure](genre_name) games out there?
