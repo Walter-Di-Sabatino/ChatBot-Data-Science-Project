@@ -8,6 +8,13 @@ stories:
           - game_name: "Half-Life"
       - action: action_provide_game_info
 
+  - story: Provide genre reccomendation
+    steps:
+      - intent: game_genre
+        entities:
+          - genre_name: "action"
+      - action: action_provide_genre_reccomendation
+
   - story: happy path
     steps:
       - intent: greet

@@ -82,6 +82,13 @@ class Developer(Base):
     developer_id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(255), index=True)  # Indice per la ricerca degli sviluppatori
 
+# Modello per le categorie (Categories)
+class Category(Base):
+    __tablename__ = 'categories'
+
+    category_id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(255), index=True)  # Indice per la ricerca dei generi
+
 # Modello per i generi (Genres)
 class Genre(Base):
     __tablename__ = 'genres'
@@ -150,6 +157,15 @@ class GameDeveloper(Base):
 
 # Indici per la tabella di relazione molti a molti tra giochi e sviluppatori
 Index('idx_game_developer', GameDeveloper.app_id, GameDeveloper.developer_id)
+
+class GameCategory(Base):
+    __tablename__ = 'game_genres'
+
+    app_id = Column(Integer, ForeignKey('games.app_id'), primary_key=True)  
+    category_id = Column(Integer, ForeignKey('category.category_id'), primary_key=True)
+
+# Indici per la tabella di relazione molti a molti tra giochi e generi
+Index('idx_game_genre', GameCategory.app_id, GameCategory.genre_id)
 
 class GameGenre(Base):
     __tablename__ = 'game_genres'

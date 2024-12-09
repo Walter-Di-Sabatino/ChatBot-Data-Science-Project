@@ -27,6 +27,24 @@ nlu:
     - Tell me about the price of [Apex Legends](game_name).
     - Is [Grand Theft Auto V](game_name) subscription-based?
 
+- intent: get_reccomendation
+  examples: |
+    - Reccomend me some [action](genre_name) games.
+    - Can you suggest any [RPG](genre_name) games?
+    - I'm looking for good [horror](genre_name) games.
+    - What are the best [adventure](genre_name) games out there?
+    - Suggest a few [platformer](genre_name) games to try.
+    - Do you know any great [strategy](genre_name) games?
+    - Give me some suggestions for [racing](genre_name) games.
+    - I'd love to play a few [sandbox](genre_name) games. Any ideas?
+    - Could you reccomend popular [indie](genre_name) games?
+    - Tell me about some good [puzzle](genre_name) games.
+    - Any [MMORPG](genre_name) games you'd recommend?
+    - What's the top [sports](genre_name) games these days?
+    - Are there any fun [simulation](genre_name) games to check out?
+    - Can you list some [casual](genre_name) games for me?
+    - I'm interested in trying [survival](genre_name) games. Suggestions?
+
 - intent: greet
   examples: |
     - hey

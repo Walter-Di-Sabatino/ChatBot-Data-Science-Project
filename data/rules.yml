@@ -5,3 +5,8 @@ rules:
     steps:
       - intent: "game_info"
       - action: "action_provide_game_info"
+
+  - rule: "Provide genre reccomendations"
+    steps:
+      - intent: "get_reccomendation"
+      - action: "action_provide_reccomendation"

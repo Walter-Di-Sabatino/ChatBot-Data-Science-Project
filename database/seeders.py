@@ -63,6 +63,10 @@ def seed_game_data(game):
     if 'English' not in supported_languages:
         return None  # Salta il gioco se non supporta l'inglese
     
+    detailed_description = game.get('detailed_description')
+    if len(detailed_description) > 65535:
+        return None
+    
     # Verifica che il nome del gioco contenga solo caratteri validi
     game_name = safe_get(game.get('name'))
     if not is_valid_game_name(game_name):
@@ -168,6 +172,20 @@ def seed_genres(game):
             genres.append(existing_genre)
     return genres
 
+def seed_categories(game):
+    """Aggiungi generi di un gioco nel database."""
+    categories = []
+    for category in game.get('categories', []):
+        existing_genre = session.query(Category).filter_by(name=category).first()
+        if not existing_genre:
+            new_genre = Category(name=category)
+            session.add(new_genre)
+            session.flush()
+            categories.append(new_genre)
+        else:
+            categories.append(existing_genre)
+    return categories
+
 def seed_movies_and_screenshots(game, new_game):
     """Aggiungi film e screenshot di un gioco nel database."""
     movies = [Movie(app_id=new_game.app_id, url=safe_get(movie)) for movie in game.get('movies', [])]
@@ -202,17 +220,18 @@ def seed_publishers_and_tags(game):
 
     return publishers, tags
 
-def link_game_to_developers_genres_publishers_tags(new_game, developers, genres, publishers, tags):
+def link_game_to_developers_genres_categories_publishers_tags(new_game, developers, genres, categories, publishers, tags):
     """Collega il gioco agli sviluppatori, generi, editori e tag (many-to-many)."""
     
     app_id = new_game.app_id
     game_developers = [GameDeveloper(app_id=app_id, developer_id=developer.developer_id) for developer in developers]
+    game_categories = [GameDeveloper(app_id=app_id, category_id=category.category_id) for category in categories]
     game_genres = [GameGenre(app_id=app_id, genre_id=genre.genre_id) for genre in genres]
     game_publishers = [GamePublisher(app_id=app_id, publisher_id=publisher.publisher_id) for publisher in publishers]
     game_tags = [GameTag(app_id=app_id, tag_id=tag[0].tag_id, tag_value=tag[1]) for tag in tags]
 
     # Usa bulk_save_objects per inserire tutte le voci in un'unica operazione
-    session.bulk_save_objects(game_developers + game_genres + game_publishers + game_tags)
+    session.bulk_save_objects(game_developers + game_genres + game_publishers + game_tags + game_categories)
 
 
 def seed_languages(game, new_game):
@@ -256,10 +275,11 @@ def seed_data(dataset):
                 continue 
             seed_package_data(game, new_game)
             developers = seed_developers(game)
+            categories = seed_categories(game)
             genres = seed_genres(game)
             seed_movies_and_screenshots(game, new_game)
             publishers, tags = seed_publishers_and_tags(game)
-            link_game_to_developers_genres_publishers_tags(new_game, developers, genres, publishers, tags)
+            link_game_to_developers_genres_categories_publishers_tags(new_game, developers, genres, categories, publishers, tags)
             seed_languages(game, new_game)
         except IntegrityError:
             session.rollback()

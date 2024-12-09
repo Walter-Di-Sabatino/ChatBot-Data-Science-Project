@@ -67,7 +67,7 @@ class ActionProvideGameInfo(Action):
 
         # Connessione al database e recupero delle informazioni sul gioco
         session = get_session() 
-        game = session.query(Game).filter(Game.name == game_name).first()
+        game = session.query(Game).filter(Game.name.ilike(game_name)).first()
 
         if game:
             # Ottieni i dettagli del gioco
@@ -89,5 +89,14 @@ class ActionProvideGameInfo(Action):
         # Se il gioco non è trovato nel database
         dispatcher.utter_message(text=f"Sorry, I couldn't retrieve details for the game '{game_name}'. Please check the name and try again.")
         session.close()
+        return []
+
+class ActionProvideGenreReccomendationo(Action):
+    def name(self) -> Text:
+        return "action_provide_reccomendation"
+
+    def run(self, dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         return []
 

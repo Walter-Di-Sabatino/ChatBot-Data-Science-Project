@@ -21,6 +21,12 @@ slots:
     mappings:
       - type: from_entity
         entity: price
+  
+  genre_name:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: genre_name
 
 intents:
   - greet
@@ -42,6 +48,7 @@ intents:
 responses:
   utter_game_info:
     - text: "{game_name} was released on {release_date}. It has a costs of {price} USD."
+
   
   utter_cheer_up:
     - text: "Here is something to cheer you up:"
@@ -61,13 +68,7 @@ responses:
 
 actions:
   - action_provide_game_info
-  - action_provide_developer_info
-  - action_provide_publisher_info
-  - action_provide_system_requirements
-  - action_provide_price_info
-  - action_provide_genre_info
-  - action_provide_review_info
-  - action_provide_achievements_info
+  - action_provide_reccomendation
 
 session_config:
   session_expiration_time: 60
