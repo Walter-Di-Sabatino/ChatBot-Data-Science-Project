@@ -42,3 +42,13 @@ alembic upgrade head
 # 11. Mostrare il log delle migrazioni
 # Mostra i dettagli delle revisioni di migrazione applicate al database
 alembic show <versione>           # Mostra il dettaglio di una specifica versione
+
+
+nlu:
+  - lookup: game_names
+    file: "lookup_files/game_names.csv"
+    entity: game_name
+
+  - lookup: tags_names
+    file: "lookup_files/tags_names.csv"
+    entity: genre_name

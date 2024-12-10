@@ -123,19 +123,14 @@ class ActionProvideGenreRecommendation(Action):
 
             top_tags = tags[:5]
 
-            top_games_tags = []
+            response = f"Here are 5 recommendations:\n"
+            dispatcher.utter_message(text=response)
 
             for tag in top_tags:
                 top_games = get_top_games_by_tag_and_score(session, tag[0].tag_id, 100)
                 random_game = random.choice(top_games)
-                top_games_tags.append([random_game, tag])
-            
-            response = f"Here are some recommendations:\n"
-            dispatcher.utter_message(text=response)
-
-            for game_tag in top_games_tags:
-                game = game_tag[0]
-                tag = game_tag[1][0]
+                game = random_game
+                tag = tag[0]
                 response = f"Here's a reccomendation for the {tag.name} genre:\n"
                 developers = get_developers_by_game(session, game.app_id)
                 dev_names = ", ".join([dev.name for dev in developers])
@@ -146,7 +141,7 @@ class ActionProvideGenreRecommendation(Action):
 
                 response += f"{game.name} released on {game.release_date} by {dev_names}.\n\n"
                 response += game.short_description
-                dispatcher.utter_message(image = game.header_image, text=response)
+                dispatcher.utter_message(image = game.header_image, text=response)                
 
             session.close()
             return [SlotSet("genre_name", None)]

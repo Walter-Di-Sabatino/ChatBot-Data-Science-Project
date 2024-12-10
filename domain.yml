@@ -80,11 +80,3 @@ session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
 
-nlu:
-  - lookup: game_names
-    file: "lookup_files/game_names.csv"
-    entity: game_name
-
-  - lookup: tags_names
-    file: "lookup_files/tags_names.csv"
-    entity: genre_name
