@@ -11,7 +11,7 @@ import sys
 # Ottieni la directory principale del progetto
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(project_dir)
-from models import *
+from database.models import *
 from sqlalchemy.exc import IntegrityError
 import re
 
