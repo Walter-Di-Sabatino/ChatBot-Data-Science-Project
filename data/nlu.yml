@@ -2,30 +2,36 @@ version: "3.1"
 
 nlu:
 
+- intent: start
+  examples: |
+    - /start
+    - open
+    - begin
+    - init
+
 - intent: game_info
   examples: |
-    - Tell me about [Half-Life](game_name).
-    - What is the release date of [Portal](game_name)?
-    - Is [Dota 2](game_name) free?
-    - When did [The Witcher 3](game_name) come out?
-    - How much does [Cyberpunk 2077](game_name) cost?
-    - Can you tell me the release date of [Red Dead Redemption 2](game_name)?
-    - What is the price of [Hades](game_name)?
-    - Is [Minecraft](game_name) still available for purchase?
-    - Tell me more about [The Elder Scrolls V: Skyrim](game_name).
-    - What was the release date of [Overwatch](game_name)?
-    - How much does [Enter th Gungeon](game_name) cost now?
-    - Is [War Thunder](game_name) free to play?
-    - When was [Assassin's Creed Valhalla](game_name) released?
-    - What is the cost of [Call of Duty: Modern Warfare 2](game_name)?
-    - Is [Far Cry 5](game_name) free to download?
-    - Can you tell me when [Final Fantasy XV](game_name) was released?
-    - How much does [The Last of Us Part I](game_name) cost?
-    - Was [Sekiro: Shadows Die Twice](game_name) released recently?
-    - When did [Monster Hunter: World](game_name) launch?
-    - Is [Subnautica](game_name) free or paid?
-    - Tell me about the price of [Apex Legends](game_name).
-    - Is [Grand Theft Auto V](game_name) subscription-based?
+    - Tell me about [a game](game_name).
+    - What is the release date of [a video game](game_name)?
+    - Is [this game](game_name) free?
+    - When did [a popular game](game_name) come out?
+    - How much does [this title](game_name) cost?
+    - Can you tell me the release date of [a certain game](game_name)?
+    - What is the price of [this game](game_name)?
+    - Is [this game](game_name) still available for purchase?
+    - Tell me about [a specific game](game_name).
+    - What was the release date of [a game](game_name)?
+    - How much does [this game](game_name) cost now?
+    - Is [this title](game_name) free to play?
+    - When was [a recent game](game_name) released?
+    - What is the cost of [a certain game](game_name)?
+    - Is [a popular game](game_name) free to download?
+    - Can you tell me when [a game](game_name) was released?
+    - How much does [this game](game_name) cost?
+    - Was [a specific title](game_name) released recently?
+    - When did [a game](game_name) launch?
+    - Is [a game](game_name) free or paid?
+    - Tell me about the price of [a game](game_name).
 
 - intent: ask_recommendation
   examples: |
@@ -47,30 +53,30 @@ nlu:
 
 - intent: get_recommendation
   examples: |
-    - I'm open to anything! I like trying new games, so I'm up for whatever you suggest.
-    - I'm not sure yet, maybe something that's popular right now or highly recommended.
-    - I'm just looking for something fun to play, don't really have a specific type in mind.
-    - I haven't decided on a genre yet, I just want to find something enjoyable to pass the time.
-    - I'm in the mood for something different, not really sure what yet.
-    - I'm up for any game, as long as it's fun and engaging.
-    - I'm just looking for something new and exciting to dive into.
-    - I don't have a specific type in mind right now.
-    - I'm flexible! If it's a good game, I'm down to try it.
-    - Recommend me some [action](genre_name) games.
-    - Can you suggest any [RPG](genre_name) games?
+    - Recommend me some games.
+    - I'm open to any fun and engaging games.
+    - Maybe some popular or highly recommended games.
+    - I'm looking for some enjoyable games to pass the time.
+    - I want to try a different kind of game.
+    - I'm up for any good game to play.
+    - I don't have a specific type of game in mind.
+    - I’m just looking for a new game to dive into.
+    - I'm flexible; suggest an exciting game.
+    - Recommend some [action](genre_name) games.
+    - Suggest a few [RPG](genre_name) games.
     - I'm looking for good [horror](genre_name) games.
-    - What are the best [adventure](genre_name) games out there?
-    - Suggest a few [platformer](genre_name) games to try.
-    - Do you know any great [strategy](genre_name) games?
-    - Give me some suggestions for [racing](genre_name) games.
-    - I'd love to play a few [sandbox](genre_name) games. Any ideas?
-    - Could you reccomend popular [indie](genre_name) games?
+    - List the best [adventure](genre_name) games out there.
+    - Provide some suggestions for [platformer](genre_name) games to try.
+    - Share any great [strategy](genre_name) games.
+    - Suggest some [racing](genre_name) games.
+    - I'd love to play a few [sandbox](genre_name) games; any ideas?
+    - Recommend popular [indie](genre_name) games.
     - Tell me about some good [puzzle](genre_name) games.
-    - Any [MMORPG](genre_name) games you'd recommend?
-    - What's the top [sports](genre_name) games these days?
-    - Are there any fun [simulation](genre_name) games to check out?
-    - Can you list some [casual](genre_name) games for me?
-    - I'm interested in trying [survival](genre_name) games. Suggestions?
+    - Suggest some [MMORPG](genre_name) games.
+    - List the top [sports](genre_name) games these days.
+    - Suggest fun [simulation](genre_name) games to check out.
+    - Provide some [casual](genre_name) games to try.
+    - Share suggestions for [survival](genre_name) games.
 
 - intent: greet
   examples: |

@@ -34,14 +34,19 @@ def get_tag_by_name(session: Session, tag_name: str):
     return session.query(Tag).filter(Tag.name.ilike(tag_name)).first()
 
 def get_top_tags(session: Session, limit: int = 5):
+    subquery = session.query(
+        GameTag.tag_id, 
+        func.count(GameTag.app_id).label('game_count')
+    ).group_by(GameTag.tag_id).subquery()
+
     return session.query(
         Tag, 
-        func.count(GameTag.app_id).label('game_count')
-            ).join(GameTag, Tag.tag_id == GameTag.tag_id) \
-            .group_by(Tag.tag_id) \
-            .order_by(func.count(GameTag.app_id).desc()) \
-            .limit(limit)\
-            .all()
+        subquery.c.game_count
+    ).join(subquery, Tag.tag_id == subquery.c.tag_id) \
+     .order_by(subquery.c.game_count.desc()) \
+     .limit(limit) \
+     .all()
+
 
 
 def get_developers_by_game(session: Session, app_id: int):

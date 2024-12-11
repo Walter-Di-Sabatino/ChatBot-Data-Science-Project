@@ -67,3 +67,4 @@ file = 'database/dataset/games.json'
 # extract_and_save_field(file, 'lookup_files/genres_names.csv', 'genres')
 # extract_and_save_field(file, 'lookup_files/categories._names.csv', 'categories')
 # extract_and_save_field(file, 'lookup_files/tags_names.csv', 'tags')
+extract_and_save_field(file, 'lookup_files/developers_names.csv', 'developers')

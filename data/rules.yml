@@ -1,12 +1,39 @@
 version: "3.1"
 
 rules:
-  - rule: "Provide game info"
+  - rule: start
     steps:
-      - intent: "game_info"
-      - action: "action_provide_game_info"
+      - intent: start
+      - action: utter_iamabot
 
-  - rule: "Provide genre recommendations"
+  - rule: Greet the user
     steps:
-      - intent: "get_recommendation"
-      - action: "action_provide_recommendation"
+      - intent: greet
+      - action: utter_greet
+
+  - rule: Say goodbye anytime the user says goodbye
+    steps:
+    - intent: goodbye
+    - action: utter_goodbye
+
+  - rule: Say 'I am a bot' anytime the user challenges
+    steps:
+      - intent: bot_challenge
+      - action: utter_iamabot
+
+  - rule: Provide game info
+    steps:
+      - intent: game_info
+      - action: action_provide_game_info
+
+  - rule: Ask recommendations
+    steps:
+      - intent: ask_recommendation
+      - action: utter_ask_interest
+      - intent: get_recommendation
+      - action: action_provide_recommendation
+
+  - rule: Provide genre recommendations
+    steps:
+      - intent: get_recommendation
+      - action: action_provide_recommendation

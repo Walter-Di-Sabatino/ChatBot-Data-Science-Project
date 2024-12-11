@@ -78,7 +78,7 @@ class ActionProvideGenreRecommendation(Action):
     def run(self, dispatcher: CollectingDispatcher,
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-        
+
         genre_name = tracker.get_slot("genre_name")
         if genre_name:
         
@@ -121,12 +121,10 @@ class ActionProvideGenreRecommendation(Action):
 
             tags = get_top_tags(session)
 
-            top_tags = tags[:5]
-
             response = f"Here are 5 recommendations:\n"
             dispatcher.utter_message(text=response)
 
-            for tag in top_tags:
+            for tag in tags:
                 top_games = get_top_games_by_tag_and_score(session, tag[0].tag_id, 100)
                 random_game = random.choice(top_games)
                 game = random_game

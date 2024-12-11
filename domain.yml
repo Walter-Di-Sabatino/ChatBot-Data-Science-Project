@@ -30,6 +30,7 @@ slots:
         entity: genre_name
 
 intents:
+  - start
   - greet
   - goodbye
   - affirm
@@ -41,7 +42,6 @@ intents:
   - get_recommendation
   - ask_recommendation
 
-
 responses:
   utter_game_info:
     - text: "{game_name} was released on {release_date}. It has a costs of {price} USD."
@@ -52,8 +52,8 @@ responses:
     - text: "What are your favorite types of games?"
     - text: "Are there any specific genres or themes you prefer when playing games?"
   
-  utter_greet:
-  - text: "Hi, I'm even help finding a game that suits you!"
+  utter_iamabot:
+  - text: "Hi, I'm Rolo, a bot made to help you find the perfect games for your gaming experience!"
 
   utter_cheer_up:
     - text: "Here is something to cheer you up:"
@@ -61,17 +61,30 @@ responses:
   
   utter_did_that_help:
     - text: "Did that help you?"
+    - text: "Was that useful?"
+    - text: "Do you need any more assistance?"
   
   utter_happy:
     - text: "Great, carry on!"
+    - text: "Awesome, keep going!"
+    - text: "Glad to hear that!"
   
   utter_goodbye:
     - text: "Bye"
+    - text: "Goodbye, take care!"
+    - text: "See you later!"
   
-  utter_iamabot:
-    - text: "I am a bot, powered by Rasa."
+  utter_greet:
+    - text: "Hi! How are you?"
+    - text: "Hello! How's it going?"
+    - text: "Hey there! What's up?"
 
 actions:
+  - utter_iamabot
+  - utter_greet
+  - utter_goodbye
+  - utter_did_that_help
+  - utter_cheer_up
   - utter_ask_interest
   - action_provide_game_info
   - action_provide_recommendation
