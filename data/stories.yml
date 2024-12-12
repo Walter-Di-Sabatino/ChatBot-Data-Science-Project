@@ -12,7 +12,7 @@ stories:
       - slot_was_set:
           - requested_slot: genre
       - slot_was_set:
-          - requested_slot: developer
+          - requested_slot: publisher
       - active_loop: null
       - action: action_provide_recommendation
 

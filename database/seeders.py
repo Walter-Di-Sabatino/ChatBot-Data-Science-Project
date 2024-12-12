@@ -14,16 +14,17 @@ sys.path.append(project_dir)
 from database.models import *
 from sqlalchemy.exc import IntegrityError
 import re
+import math
 
 # Carica le variabili di ambiente dal file .env
 load_dotenv()
 
 # Recupera gli elementi dell'URL del database
-DB_USER = os.getenv("DB_USER", "root")  # Usa "root" come valore predefinito
-DB_PASSWORD = os.getenv("DB_PASSWORD", "Jawalter2020-")
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_NAME = os.getenv("DB_NAME", "steam_library")
-DB_DRIVER = os.getenv("DB_DRIVER", "mysql+pymysql")
+DB_USER = os.getenv("DB_USER")  # Usa "root" come valore predefinito
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+DB_DRIVER = os.getenv("DB_DRIVER")
 
 # Costruisci l'URL del database
 DATABASE_URL = f"{DB_DRIVER}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
@@ -31,6 +32,16 @@ DATABASE_URL = f"{DB_DRIVER}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
 engine = create_engine(DATABASE_URL)
 Session = sessionmaker(bind=engine)
 session = Session()
+
+
+# Funzione per calcolare il valore
+def calculate_value(positive, negative):
+    # Evitiamo che l'argomento del logaritmo sia inferiore a 1
+    log_argument = positive + negative + 1
+    log_argument = max(log_argument, 1)  # Impedisce valori inferiori a 1
+    if positive + negative == 0:
+        return 0  # Evita la divisione per zero se entrambi sono zero
+    return math.log(log_argument)
 
 def load_json_data(filepath):
     """Carica i dati dal file JSON."""
@@ -182,14 +193,14 @@ def seed_categories(game):
     """Aggiungi generi di un gioco nel database."""
     categories = []
     for category in game.get('categories', []):
-        existing_genre = session.query(Category).filter_by(name=category).first()
-        if not existing_genre:
-            new_genre = Category(name=category)
-            session.add(new_genre)
+        existing_category = session.query(Category).filter_by(name=category).first()
+        if not existing_category:
+            new_category = Category(name=category)
+            session.add(new_category)
             session.flush()
-            categories.append(new_genre)
+            categories.append(new_category)
         else:
-            categories.append(existing_genre)
+            categories.append(existing_category)
     return categories
 
 def seed_movies_and_screenshots(game, new_game):
@@ -272,13 +283,37 @@ def seed_languages(game, new_game):
     session.bulk_save_objects(supported_languages_list + full_audio_languages_list)
 
 def seed_data(dataset):
-    """Esegui il seeding dei dati nel database."""
+    """Esegui il seeding dei dati nel database, assicurandoti che non ci siano duplicati basati sul nome del gioco."""
     
-    for game in dataset.values():
+    # Rimuovi duplicati basandoti sul nome del gioco
+    unique_dataset = {}
+    seen_names = set()
+    for game_id, game in dataset.items():
+        name = game.get('name', '').strip().lower()
+        if name and name not in seen_names:
+            seen_names.add(name)
+            unique_dataset[game_id] = game
+
+    # Prepara i dati per il seeding
+    games = []
+    for game_id, game in unique_dataset.items():
+        positive = game.get('positive', 0)
+        negative = game.get('negative', 0)
+        value = calculate_value(positive, negative)
+        games.append((game_id, value, game))
+
+    # Ordina i giochi in base al valore (dal più alto al più basso)
+    games_sorted = sorted(games, key=lambda x: x[1], reverse=True)
+
+    # Prendi i primi 5000 giochi (o meno se non ci sono abbastanza giochi)
+    top_games = games_sorted[:5000]
+
+    for top_game in top_games:
+        game = top_game[2]
         try:
             new_game = seed_game_data(game)
             if new_game is None:
-                continue 
+                continue
             seed_package_data(game, new_game)
             developers = seed_developers(game)
             categories = seed_categories(game)

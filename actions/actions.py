@@ -23,11 +23,11 @@ from rasa_sdk.types import DomainDict
 load_dotenv()
 
 # Recupera gli elementi dell'URL del database
-DB_USER = os.getenv("DB_USER", "root")
-DB_PASSWORD = os.getenv("DB_PASSWORD", "Jawalter2020-")
-DB_HOST = os.getenv("DB_HOST", "localhost")
-DB_NAME = os.getenv("DB_NAME", "steam_library")
-DB_DRIVER = os.getenv("DB_DRIVER", "mysql+pymysql")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_NAME = os.getenv("DB_NAME")
+DB_DRIVER = os.getenv("DB_DRIVER")
 
 # Costruisci l'URL del database
 DATABASE_URL = f"{DB_DRIVER}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}/{DB_NAME}"
@@ -155,22 +155,22 @@ class ActionProvideGenreRecommendation(Action):
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
         genre = tracker.get_slot("genre")
-        developer = tracker.get_slot("developer")
+        publisher = tracker.get_slot("publisher")
 
         session = get_session()
 
-        games = get_top_games_by_developer_and_tag(session, developer,genre )
+        games = get_top_games_by_publisher_and_tag(session, publisher, genre )
 
         if not games:
-            dispatcher.utter_message(text=f"Sorry, I couldn't find any games for the {genre} and {developer} combination.")
+            dispatcher.utter_message(text=f"Sorry, I couldn't find any games for the {genre} and {publisher} combination.")
         else:
             for game in games:
                 response = ""
-                response += f"{game.name} released on {game.release_date} by {developer}.\n\n"
+                response += f"{game.name} released on {game.release_date} by {publisher}.\n\n"
                 response += game.short_description
                 dispatcher.utter_message(image=game.header_image, text=response)
 
-        return [SlotSet("genre", None), SlotSet("developer", None)]
+        return [SlotSet("genre", None), SlotSet("publisher", None)]
 
 
 '''class ValidateDetailedRecommendationForm(FormValidationAction):

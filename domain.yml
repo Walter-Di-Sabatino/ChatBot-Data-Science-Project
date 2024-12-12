@@ -20,7 +20,7 @@ actions:
   - utter_did_that_help
   - utter_cheer_up
   - utter_ask_genre
-  - utter_ask_developer
+  - utter_ask_publisher
   - action_provide_game_info
   - action_provide_recommendation
 
@@ -28,7 +28,7 @@ entities:
   - game
   - genre
   - language
-  - developer
+  - publisher
 
 slots:
 
@@ -46,12 +46,12 @@ slots:
       - type: from_entity
         entity: language
 
-  developer:
+  publisher:
     type: text
     influence_conversation: true
     mappings:
       - type: from_entity
-        entity: developer
+        entity: publisher
 
   game:
     type: text
@@ -63,7 +63,7 @@ forms:
   detailed_recommendation_form:
     required_slots:
       - genre
-      - developer
+      - publisher
 
 responses:
 
@@ -73,11 +73,11 @@ responses:
     - text: "What are your favorite types of games?"
     - text: "Are there any specific genres or themes you prefer when playing games?"
 
-  utter_ask_developer:
-    - text: "What type of game developers do you prefer?"
-    - text: "Can you tell me which game developers you like?"
-    - text: "What are your favorite developers?"
-    - text: "Are there any specific developers or studios you prefer when playing games?"
+  utter_ask_publisher:
+    - text: "What type of game publishers do you prefer?"
+    - text: "Can you tell me which game publishers you like?"
+    - text: "What are your favorite publishers?"
+    - text: "Are there any specific publishers or studios you prefer when playing games?"
 
   utter_iamabot:
     - text: "Hi, I'm Rolo, a bot made to help you find the perfect games for your gaming experience!"

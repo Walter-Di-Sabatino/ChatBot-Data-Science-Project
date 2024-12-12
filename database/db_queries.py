@@ -29,13 +29,22 @@ def get_top_games_by_tag_and_score(session, tag_id, limit=5):
         .limit(limit) \
         .all()
 
-def get_top_games_by_developer_and_tag(session, developer_name, tag_name, limit=5):
+def get_top_games_by_publisher_and_tag(session, publisher_name, tag_name, limit=5):
     score_expr = (
         (func.coalesce(Game.positive, 0) / func.coalesce(Game.positive + Game.negative, 1))
         * func.log(func.coalesce(Game.positive - Game.negative, 0) + 1)
     )
 
-    return session.query(Game) .join(GameDeveloper, GameDeveloper.app_id == Game.app_id) .join(Developer, Developer.developer_id == GameDeveloper.developer_id) .join(GameTag, GameTag.app_id == Game.app_id) .join(Tag, Tag.tag_id == GameTag.tag_id) .filter(Developer.name.ilike(developer_name)) .filter(Tag.name.ilike(tag_name)) .order_by(score_expr.desc()) .limit(limit) .all()
+    return (
+        session.query(Game) 
+        .join(Game.publishers) 
+        .join(Game.tags) 
+        .filter(Publisher.name.ilike(publisher_name)) 
+        .filter(Tag.name.ilike(tag_name)) 
+        .order_by(score_expr.desc()) 
+        .limit(limit) 
+        .all()
+        )
 
 def get_tag_by_name(session: Session, tag_name: str):
     return session.query(Tag).filter(Tag.name.ilike(tag_name)).first()
@@ -56,10 +65,10 @@ def get_top_tags(session: Session, limit: int = 5):
 
 
 
-def get_developers_by_game(session: Session, app_id: int):
-    return session.query(Developer) \
-        .join(GameDeveloper, GameDeveloper.developer_id == Developer.developer_id) \
-        .join(Game, Game.app_id == GameDeveloper.app_id) \
+def get_publishers_by_game(session: Session, app_id: int):
+    return session.query(Publisher) \
+        .join(GamePublisher, GamePublisher.publisher_id == Publisher.publisher_id) \
+        .join(Game, Game.app_id == GamePublisher.app_id) \
         .filter(Game.app_id == app_id) \
         .distinct() \
         .all()
