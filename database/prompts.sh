@@ -52,3 +52,39 @@ nlu:
   - lookup: tags_names
     file: "lookup_files/tags_names.csv"
     entity: genre_name
+
+
+
+  - rule: Ask recommendations
+    steps:
+      - intent: ask_recommendation
+      - action: utter_ask_interest
+      - intent: get_recommendation
+      - action: action_provide_recommendation
+
+  - rule: Provide genre recommendations
+    steps:
+      - intent: get_recommendation
+      - action: action_provide_recommendation
+
+
+
+- story: Provide recommendation
+    steps:
+      - intent: ask_recommendation
+      - action: utter_ask_interest
+      - intent: get_recommendation
+        entities:
+          - genre_name: "action"
+      - action: action_provide_recommendation
+
+
+- Recommend me some games.
+- I'm open to any fun and engaging games.
+- Maybe some popular or highly recommended games.
+- I'm looking for some enjoyable games to pass the time.
+- I want to try a different kind of game.
+- I'm up for any good game to play.
+- I don't have a specific type of game in mind.
+- I’m just looking for a new game to dive into.
+- I'm flexible; suggest an exciting game.

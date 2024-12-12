@@ -1,34 +1,5 @@
 version: "3.1"
 
-entities:
-  - game_name
-  - genre_name
-
-slots:
-  game_name:
-    type: text
-    mappings:
-      - type: from_entity
-        entity: game_name
-
-  release_date:
-    type: text
-    mappings:
-      - type: from_entity
-        entity: release_date
-
-  price:
-    type: float
-    mappings:
-      - type: from_entity
-        entity: price
-  
-  genre_name:
-    type: text
-    mappings:
-      - type: from_entity
-        entity: genre_name
-
 intents:
   - start
   - greet
@@ -42,54 +13,99 @@ intents:
   - get_recommendation
   - ask_recommendation
 
-responses:
-  utter_game_info:
-    - text: "{game_name} was released on {release_date}. It has a costs of {price} USD."
-
-  utter_ask_interest:
-    - text: "What type of games are you interested in?"
-    - text: "Can you tell me which genres of games you like?"
-    - text: "What are your favorite types of games?"
-    - text: "Are there any specific genres or themes you prefer when playing games?"
-  
-  utter_iamabot:
-  - text: "Hi, I'm Rolo, a bot made to help you find the perfect games for your gaming experience!"
-
-  utter_cheer_up:
-    - text: "Here is something to cheer you up:"
-      image: "https://i.imgur.com/nGF1K8f.jpg"
-  
-  utter_did_that_help:
-    - text: "Did that help you?"
-    - text: "Was that useful?"
-    - text: "Do you need any more assistance?"
-  
-  utter_happy:
-    - text: "Great, carry on!"
-    - text: "Awesome, keep going!"
-    - text: "Glad to hear that!"
-  
-  utter_goodbye:
-    - text: "Bye"
-    - text: "Goodbye, take care!"
-    - text: "See you later!"
-  
-  utter_greet:
-    - text: "Hi! How are you?"
-    - text: "Hello! How's it going?"
-    - text: "Hey there! What's up?"
-
 actions:
   - utter_iamabot
   - utter_greet
   - utter_goodbye
   - utter_did_that_help
   - utter_cheer_up
-  - utter_ask_interest
+  - utter_ask_genre
+  - utter_ask_developer
   - action_provide_game_info
   - action_provide_recommendation
+
+entities:
+  - game
+  - genre
+  - language
+  - developer
+
+slots:
+
+  genre:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: genre
+
+  language:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: language
+
+  developer:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: developer
+
+  game:
+    type: text
+    mappings:
+      - type: from_entity
+        entity: game
+
+forms:
+  detailed_recommendation_form:
+    required_slots:
+      - genre
+      - developer
+
+responses:
+
+  utter_ask_genre:
+    - text: "What type of games are you interested in?"
+    - text: "Can you tell me which genres of games you like?"
+    - text: "What are your favorite types of games?"
+    - text: "Are there any specific genres or themes you prefer when playing games?"
+
+  utter_ask_developer:
+    - text: "What type of game developers do you prefer?"
+    - text: "Can you tell me which game developers you like?"
+    - text: "What are your favorite developers?"
+    - text: "Are there any specific developers or studios you prefer when playing games?"
+
+  utter_iamabot:
+    - text: "Hi, I'm Rolo, a bot made to help you find the perfect games for your gaming experience!"
+
+  utter_cheer_up:
+    - text: "Here is something to cheer you up:"
+      image: "https://i.imgur.com/nGF1K8f.jpg"
+
+  utter_did_that_help:
+    - text: "Did that help you?"
+    - text: "Was that useful?"
+    - text: "Do you need any more assistance?"
+
+  utter_happy:
+    - text: "Great, carry on!"
+    - text: "Awesome, keep going!"
+    - text: "Glad to hear that!"
+
+  utter_goodbye:
+    - text: "Bye"
+    - text: "Goodbye, take care!"
+    - text: "See you later!"
+
+  utter_greet:
+    - text: "Hi! How are you?"
+    - text: "Hello! How's it going?"
+    - text: "Hey there! What's up?"
 
 session_config:
   session_expiration_time: 60
   carry_over_slots_to_new_session: true
-

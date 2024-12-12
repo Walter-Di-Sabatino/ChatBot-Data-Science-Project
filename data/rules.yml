@@ -1,5 +1,3 @@
-version: "3.1"
-
 rules:
   - rule: start
     steps:
@@ -21,19 +19,3 @@ rules:
       - intent: bot_challenge
       - action: utter_iamabot
 
-  - rule: Provide game info
-    steps:
-      - intent: game_info
-      - action: action_provide_game_info
-
-  - rule: Ask recommendations
-    steps:
-      - intent: ask_recommendation
-      - action: utter_ask_interest
-      - intent: get_recommendation
-      - action: action_provide_recommendation
-
-  - rule: Provide genre recommendations
-    steps:
-      - intent: get_recommendation
-      - action: action_provide_recommendation

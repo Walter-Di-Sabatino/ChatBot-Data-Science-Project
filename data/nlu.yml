@@ -11,27 +11,27 @@ nlu:
 
 - intent: game_info
   examples: |
-    - Tell me about [a game](game_name).
-    - What is the release date of [a video game](game_name)?
-    - Is [this game](game_name) free?
-    - When did [a popular game](game_name) come out?
-    - How much does [this title](game_name) cost?
-    - Can you tell me the release date of [a certain game](game_name)?
-    - What is the price of [this game](game_name)?
-    - Is [this game](game_name) still available for purchase?
-    - Tell me about [a specific game](game_name).
-    - What was the release date of [a game](game_name)?
-    - How much does [this game](game_name) cost now?
-    - Is [this title](game_name) free to play?
-    - When was [a recent game](game_name) released?
-    - What is the cost of [a certain game](game_name)?
-    - Is [a popular game](game_name) free to download?
-    - Can you tell me when [a game](game_name) was released?
-    - How much does [this game](game_name) cost?
-    - Was [a specific title](game_name) released recently?
-    - When did [a game](game_name) launch?
-    - Is [a game](game_name) free or paid?
-    - Tell me about the price of [a game](game_name).
+    - Tell me about [The Witcher 3: Wild Hunt](game).
+    - What is the release date of [Cyberpunk 2077](game)?
+    - Is [Fortnite](game) free?
+    - When did [Minecraft](game) come out?
+    - How much does [The Legend of Zelda: Breath of the Wild](game) cost?
+    - Can you tell me the release date of [Hades](game)?
+    - What is the price of [Red Dead Redemption 2](game)?
+    - Is [Overwatch 2](game) still available for purchase?
+    - Tell me about [Apex Legends](game).
+    - What was the release date of [Final Fantasy VII Remake](game)?
+    - How much does [Call of Duty: Modern Warfare II](game) cost now?
+    - Is [League of Legends](game) free to play?
+    - When was [Starfield](game) released?
+    - What is the cost of [Assassin's Creed Odyssey](game)?
+    - Is [Valorant](game) free to download?
+    - Can you tell me when [Dying Light 2](game) was released?
+    - How much does [God of War Ragnarök](game) cost?
+    - Was [Elden Ring](game) released recently?
+    - When did [Horizon Forbidden West](game) launch?
+    - Is [FIFA 23](game) free or paid?
+    - Tell me about the price of [Resident Evil 4 Remake](game).
 
 - intent: ask_recommendation
   examples: |
@@ -51,32 +51,50 @@ nlu:
     - Can you suggest some universally liked games?
     - What games are really worth playing?
 
+- intent: get_developer_games
+  examples: |
+    - [Obsidian](developer)
+    - can you find games made by [Nintendo](developer)?
+    - show  all games developed by [Ubisoft](developer).
+    - i want to see games created by [Square enix](developer).
+    - which games did [Bethesda](developer) develop?
+    - find games from the developers at [rockstar games](developer).
+    - do you have any games made by [Valve](developer)?
+    - list the games produced by [Activision](developer).
+    - can you show me some games made by [ea sports](developer)?
+    - what games are from the development team [capcom](developer)?
+    - i’m looking for games developed by [insomniac games](developer).
+    - what titles did [cd projekt red](developer) work on?
+    - find games from [Blizzard entertainment](developer).
+    - are there any games from [Bandai namco](developer)?
+    - give me games developed by [Gameloft](developer).
+    - can you list games created by [Treyarch](developer)?
+    - what games did [Fromsoftware](developer) create?
+
 - intent: get_recommendation
   examples: |
-    - Recommend me some games.
-    - I'm open to any fun and engaging games.
-    - Maybe some popular or highly recommended games.
-    - I'm looking for some enjoyable games to pass the time.
-    - I want to try a different kind of game.
-    - I'm up for any good game to play.
-    - I don't have a specific type of game in mind.
-    - I’m just looking for a new game to dive into.
-    - I'm flexible; suggest an exciting game.
-    - Recommend some [action](genre_name) games.
-    - Suggest a few [RPG](genre_name) games.
-    - I'm looking for good [horror](genre_name) games.
-    - List the best [adventure](genre_name) games out there.
-    - Provide some suggestions for [platformer](genre_name) games to try.
-    - Share any great [strategy](genre_name) games.
-    - Suggest some [racing](genre_name) games.
-    - I'd love to play a few [sandbox](genre_name) games; any ideas?
-    - Recommend popular [indie](genre_name) games.
-    - Tell me about some good [puzzle](genre_name) games.
-    - Suggest some [MMORPG](genre_name) games.
-    - List the top [sports](genre_name) games these days.
-    - Suggest fun [simulation](genre_name) games to check out.
-    - Provide some [casual](genre_name) games to try.
-    - Share suggestions for [survival](genre_name) games.
+    - [Looter Shooter](genre)
+    - I like [Cinematic](genre) games
+    - I prefer [Arcade](genre) games
+    - I enjoy [Co-op](genre) games
+    - I love [FPS](genre) games
+    - I'm into [Combat](genre) games
+    - [Strategy](genre) games are my favorite
+    - Recommend some [action](genre) games.
+    - Suggest a few [RPG](genre) games.
+    - I'm looking for good [horror](genre) games.
+    - List the best [adventure](genre) games out there.
+    - Provide some suggestions for [platformer](genre) games to try.
+    - Share any great [strategy](genre) games.
+    - Suggest some [racing](genre) games.
+    - I'd love to play a few [sandbox](genre) games; any ideas?
+    - Recommend popular [indie](genre) games.
+    - Tell me about some good [puzzle](genre) games.
+    - Suggest some [MMORPG](genre) games.
+    - List the top [sports](genre) games these days.
+    - Suggest fun [simulation](genre) games to check out.
+    - Provide some [casual](genre) games to try.
+    - Share suggestions for [survival](genre) games.
 
 - intent: greet
   examples: |
@@ -167,7 +185,7 @@ nlu:
     - am I talking to a bot?
     - am I talking to a human?
 
-- lookup: game_name
+- lookup: game
   examples: |
     - HAINYA WORLD
     - Bar Breaker
@@ -86232,7 +86250,7 @@ nlu:
     - Global Soccer: A Management Game 2017
     - Google Spotlight Stories: On Ice
     - Anomaly Korea
-- lookup: genre_name
+- lookup: genre
   examples: |
     - 1980s
     - 1990's

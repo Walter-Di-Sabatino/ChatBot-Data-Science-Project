@@ -1,20 +1,19 @@
-version: "3.1"
-
 stories:
   - story: Provide game information
     steps:
       - intent: game_info
-        entities:
-          - game_name: "Half-Life"
       - action: action_provide_game_info
 
-  - story: Provide recommendation
+  - story: get_detailed_recommendation_story
     steps:
       - intent: ask_recommendation
-      - action: utter_ask_interest
-      - intent: get_recommendation
-        entities:
-          - genre_name: "action"
+      - action: detailed_recommendation_form
+      - active_loop: detailed_recommendation_form
+      - slot_was_set:
+          - requested_slot: genre
+      - slot_was_set:
+          - requested_slot: developer
+      - active_loop: null
       - action: action_provide_recommendation
 
   - story: happy path

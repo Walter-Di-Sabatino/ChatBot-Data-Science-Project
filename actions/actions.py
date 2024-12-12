@@ -13,6 +13,11 @@ import random
 from rapidfuzz import process
 from sqlalchemy import func
 import math
+from typing import Text, List, Any, Dict
+
+from rasa_sdk import Tracker, FormValidationAction
+from rasa_sdk.executor import CollectingDispatcher
+from rasa_sdk.types import DomainDict
 
 # Carica le variabili di ambiente dal file .env
 load_dotenv()
@@ -48,30 +53,27 @@ class ActionProvideGameInfo(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
-        game_name = tracker.get_slot("game_name")
-        if not game_name:
+        game = tracker.get_slot("game")
+        if not game:
             dispatcher.utter_message(text="I need the name of the game to provide details.")
             return []
         
         session = get_session()
-        game = get_game_by_name(session, game_name)
+        game = get_game_by_name(session, game)
 
         if game:
             release_date = game.release_date.strftime("%Y-%m-%d") if game.release_date else None
             price = game.price
             dispatcher.utter_message(
-                response="utter_game_info",
-                game_name=game.name,
-                release_date=release_date,
-                price=price
+                f"{game.name} was released on {release_date}. It has a cost of {game.price} USD."
             )
         else:
-            dispatcher.utter_message(text=f"Sorry, I couldn't retrieve details for the game '{game_name}'.")
+            dispatcher.utter_message(text=f"Sorry, I couldn't retrieve details for the game '{game}'.")
         
         session.close()
-        return [SlotSet("game_name", None)]
+        return [SlotSet("game", None)]
 
-class ActionProvideGenreRecommendation(Action):
+"""class ActionProvideGenreRecommendation(Action):
     def name(self) -> Text:
         return "action_provide_recommendation"
 
@@ -79,25 +81,25 @@ class ActionProvideGenreRecommendation(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
-        genre_name = tracker.get_slot("genre_name")
-        if genre_name:
+        genre = tracker.get_slot("genre")
+        if genre:
         
             session = get_session()
-            tag = get_tag_by_name(session, genre_name)
+            tag = get_tag_by_name(session, genre)
 
             if tag:
                 games = get_top_games_by_tag_and_score(session, tag.tag_id, 5)
             else:
-                dispatcher.utter_message(text=f"Sorry, I couldn't find any games for the genre'{genre_name}'.")
+                dispatcher.utter_message(text=f"Sorry, I couldn't find any games for the genre'{genre}'.")
                 session.close()
-                return [SlotSet("genre_name", None)]
+                return [SlotSet("genre", None)]
             
             if not games:
-                dispatcher.utter_message(text=f"No games found for the genre '{genre_name}'.")
+                dispatcher.utter_message(text=f"No games found for the genre '{genre}'.")
                 session.close()
-                return [SlotSet("genre_name", None)]
+                return [SlotSet("genre", None)]
 
-            response = f"Here are some recommendations for the {genre_name} genre:\n"
+            response = f"Here are some recommendations for the {genre} genre:\n"
             dispatcher.utter_message(text=response)
 
             for game in games:
@@ -114,7 +116,7 @@ class ActionProvideGenreRecommendation(Action):
                 dispatcher.utter_message(image = game.header_image, text=response)
             
             session.close()
-            return [SlotSet("genre_name", None)]
+            return [SlotSet("genre", None)]
         else:
 
             session = get_session()
@@ -142,4 +144,58 @@ class ActionProvideGenreRecommendation(Action):
                 dispatcher.utter_message(image = game.header_image, text=response)                
 
             session.close()
-            return [SlotSet("genre_name", None)]
+            return [SlotSet("genre", None)]"""
+
+class ActionProvideGenreRecommendation(Action):
+    def name(self) -> Text:
+        return "action_provide_recommendation"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+
+        genre = tracker.get_slot("genre")
+        developer = tracker.get_slot("developer")
+
+        session = get_session()
+
+        games = get_top_games_by_developer_and_tag(session, developer,genre )
+
+        if not games:
+            dispatcher.utter_message(text=f"Sorry, I couldn't find any games for the {genre} and {developer} combination.")
+        else:
+            for game in games:
+                response = ""
+                response += f"{game.name} released on {game.release_date} by {developer}.\n\n"
+                response += game.short_description
+                dispatcher.utter_message(image=game.header_image, text=response)
+
+        return [SlotSet("genre", None), SlotSet("developer", None)]
+
+
+'''class ValidateDetailedRecommendationForm(FormValidationAction):
+    def name(self) -> Text:
+        return "validate_detailed_recommendation_form"
+
+    @staticmethod
+    def cuisine_db() -> List[Text]:
+        """Database of supported cuisines"""
+
+        return ["caribbean", "chinese", "french"]
+
+    def validate_cuisine(
+        self,
+        slot_value: Any,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: DomainDict,
+    ) -> Dict[Text, Any]:
+        """Validate cuisine value."""
+
+        if slot_value.lower() in self.cuisine_db():
+            # validation succeeded, set the value of the "cuisine" slot to value
+            return {"cuisine": slot_value}
+        else:
+            # validation failed, set this slot to None so that the
+            # user will be asked for the slot again
+            return {"cuisine": None}'''

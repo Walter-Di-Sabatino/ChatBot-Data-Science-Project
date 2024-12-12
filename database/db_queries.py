@@ -29,6 +29,13 @@ def get_top_games_by_tag_and_score(session, tag_id, limit=5):
         .limit(limit) \
         .all()
 
+def get_top_games_by_developer_and_tag(session, developer_name, tag_name, limit=5):
+    score_expr = (
+        (func.coalesce(Game.positive, 0) / func.coalesce(Game.positive + Game.negative, 1))
+        * func.log(func.coalesce(Game.positive - Game.negative, 0) + 1)
+    )
+
+    return session.query(Game) .join(GameDeveloper, GameDeveloper.app_id == Game.app_id) .join(Developer, Developer.developer_id == GameDeveloper.developer_id) .join(GameTag, GameTag.app_id == Game.app_id) .join(Tag, Tag.tag_id == GameTag.tag_id) .filter(Developer.name.ilike(developer_name)) .filter(Tag.name.ilike(tag_name)) .order_by(score_expr.desc()) .limit(limit) .all()
 
 def get_tag_by_name(session: Session, tag_name: str):
     return session.query(Tag).filter(Tag.name.ilike(tag_name)).first()
