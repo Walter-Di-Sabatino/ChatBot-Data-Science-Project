@@ -10,7 +10,6 @@ from database.db_queries import *
 from database.models import *
 from rasa_sdk.events import SlotSet
 import random
-from rapidfuzz import process
 from sqlalchemy import func
 import math
 from typing import Text, List, Any, Dict
@@ -45,6 +44,25 @@ def get_game_score(game):
         return 0
     return (game.positive / (game.positive + game.negative)) * math.log(game.positive + game.negative + 1)
 
+def format_names(names):
+
+    all_names = ", ".join([name.name for name in names])
+
+    if ", " in all_names:
+        all_names = all_names.rsplit(", ", 1)
+        all_names = " and ".join(all_names)
+
+    return all_names
+
+def game_info_response(game, publishers_developers):
+    pub_names = format_names(publishers_developers[game.app_id]["publishers"])
+    dev_names = format_names(publishers_developers[game.app_id]["developers"])
+
+    release_date = game.release_date.strftime("%B %d, %Y") if game.release_date else None
+    response = f"{game.name} was released on {release_date} by {pub_names}. It costs {game.price} USD and was developed by {dev_names}."
+    return response
+
+
 class ActionProvideGameInfo(Action):
     def name(self) -> Text:
         return "action_provide_game_info"
@@ -62,16 +80,50 @@ class ActionProvideGameInfo(Action):
         game = get_game_by_name(session, game)
 
         if game:
-            release_date = game.release_date.strftime("%Y-%m-%d") if game.release_date else None
-            price = game.price
-            dispatcher.utter_message(
-                f"{game.name} was released on {release_date}. It has a cost of {game.price} USD."
-            )
+            publishers_developers = get_developers_and_publishers_by_games(session , game.app_id)
+
+            response = game_info_response(game, publishers_developers)
+            
+            dispatcher.utter_message(response)
+
+            dispatcher.utter_message(image=game.header_image, text=game.short_description)
         else:
             dispatcher.utter_message(text=f"Sorry, I couldn't retrieve details for the game '{game}'.")
         
         session.close()
         return [SlotSet("game", None)]
+
+class ActionProvideGenreRecommendation(Action):
+    def name(self) -> Text:
+        return "action_provide_recommendation"
+
+    def run(self, dispatcher: CollectingDispatcher,
+            tracker: Tracker,
+            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
+
+        genre = tracker.get_slot("genre")
+        publisher = tracker.get_slot("publisher")
+
+        session = get_session()
+
+        games = get_top_games_by_publisher_and_tag(session, publisher, genre )
+
+        if not games:
+            dispatcher.utter_message(text=f"Sorry, I couldn't find any games for the {genre} and {publisher} combination.")
+        else:
+            games_ids = [game.app_id for game in games]
+            publishers_developers = get_developers_and_publishers_by_games(session , games_ids)
+            for game in games:
+
+                response = ""
+                response += game_info_response(game, publishers_developers)
+                response += game.short_description
+                dispatcher.utter_message(image=game.header_image, text=response)
+
+        session.close()
+        return [SlotSet("genre", None), SlotSet("publisher", None)]
+
+
 
 """class ActionProvideGenreRecommendation(Action):
     def name(self) -> Text:
@@ -145,32 +197,6 @@ class ActionProvideGameInfo(Action):
 
             session.close()
             return [SlotSet("genre", None)]"""
-
-class ActionProvideGenreRecommendation(Action):
-    def name(self) -> Text:
-        return "action_provide_recommendation"
-
-    def run(self, dispatcher: CollectingDispatcher,
-            tracker: Tracker,
-            domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
-
-        genre = tracker.get_slot("genre")
-        publisher = tracker.get_slot("publisher")
-
-        session = get_session()
-
-        games = get_top_games_by_publisher_and_tag(session, publisher, genre )
-
-        if not games:
-            dispatcher.utter_message(text=f"Sorry, I couldn't find any games for the {genre} and {publisher} combination.")
-        else:
-            for game in games:
-                response = ""
-                response += f"{game.name} released on {game.release_date} by {publisher}.\n\n"
-                response += game.short_description
-                dispatcher.utter_message(image=game.header_image, text=response)
-
-        return [SlotSet("genre", None), SlotSet("publisher", None)]
 
 
 '''class ValidateDetailedRecommendationForm(FormValidationAction):

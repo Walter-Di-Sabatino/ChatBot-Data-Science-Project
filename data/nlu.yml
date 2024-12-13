@@ -13,23 +13,23 @@ nlu:
   examples: |
     - Tell me about [The Witcher 3: Wild Hunt](game).
     - What is the release date of [Cyberpunk 2077](game)?
-    - Is [Fortnite](game) free?
-    - When did [Minecraft](game) come out?
-    - How much does [The Legend of Zelda: Breath of the Wild](game) cost?
+    - Is [ARK: Survival Evolved](game) free?
+    - When did [Borderlands 3](game) come out?
+    - How much does [BioShock Infinite](game) cost?
     - Can you tell me the release date of [Hades](game)?
     - What is the price of [Red Dead Redemption 2](game)?
     - Is [Overwatch 2](game) still available for purchase?
     - Tell me about [Apex Legends](game).
     - What was the release date of [Final Fantasy VII Remake](game)?
     - How much does [Call of Duty: Modern Warfare II](game) cost now?
-    - Is [League of Legends](game) free to play?
+    - Is [Conan Exiles](game) free to play?
     - When was [Starfield](game) released?
     - What is the cost of [Assassin's Creed Odyssey](game)?
-    - Is [Valorant](game) free to download?
+    - Is [Just Cause 3](game) free to download?
     - Can you tell me when [Dying Light 2](game) was released?
-    - How much does [God of War Ragnarök](game) cost?
+    - How much does [Hearts of Iron IV](game) cost?
     - Was [Elden Ring](game) released recently?
-    - When did [Horizon Forbidden West](game) launch?
+    - When did [Horizon Forbidden West Complete Edition](game) launch?
     - Is [FIFA 23](game) free or paid?
     - Tell me about the price of [Resident Evil 4 Remake](game).
 
@@ -53,7 +53,7 @@ nlu:
 
 - intent: get_publisher_games
   examples: |
-    - [Obsidian](publisher)
+    - [Electronic Arts](publisher)
     - can you find games made by [Nintendo](publisher)?
     - show  all games developed by [Ubisoft](publisher).
     - i want to see games created by [Square enix](publisher).
@@ -5433,11 +5433,6 @@ nlu:
     - zombies
 - lookup: publisher
   examples: |
-    - 
-    - -
-    - (none)
-    - @unepic_fran
-    - 🚀 Raiser Games
     - 011 Games
     - 0Cube
     - 10 Chambers
@@ -7671,18 +7666,3 @@ nlu:
     - Zombie Studios
     - Zoo Corporation
     - ZOV GAME STUDIO
-    - Дмитриев Максим Константинович
-    - Носков Сергей
-    - 东方幕华祭制作组
-    - 东游鉴
-    - 二色幽紫蝶
-    - 墨鱼玩游戏
-    - 惊叹号游戏工作室
-    - 方块游戏 (Asia)
-    - 方块游戏 (China)
-    - 方块游戏(CubeGame)
-    - 株式会社バンダイナムコエンターテインメント
-    - 格林达姆136工程团
-    - 电钮组
-    - 软星科技（北京）有限公司
-    - 零创游戏(ZerocreationGame)

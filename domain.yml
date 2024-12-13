@@ -64,6 +64,10 @@ forms:
     required_slots:
       - genre
       - publisher
+  
+  game_info_form:
+    required_slots:
+      - game
 
 responses:
 
@@ -74,7 +78,7 @@ responses:
     - text: "Are there any specific genres or themes you prefer when playing games?"
 
   utter_ask_publisher:
-    - text: "What type of game publishers do you prefer?"
+    - text: "What game publishers do you prefer?"
     - text: "Can you tell me which game publishers you like?"
     - text: "What are your favorite publishers?"
     - text: "Are there any specific publishers or studios you prefer when playing games?"

@@ -1,10 +1,41 @@
 from sqlalchemy.orm import Session
 from database.models import *
 from sqlalchemy import func, case
+from sqlalchemy.orm import joinedload
 
 
 def get_game_by_name(session: Session, game_name: str):
     return session.query(Game).filter(Game.name.ilike(game_name)).first()
+
+
+def get_publisher_by_game(session: Session, game_id):
+    return session.query(Publisher).join(Game.publishers).filter(Game.app_id == game_id).all()
+
+def get_developer_by_game(session: Session, game_id):
+    return session.query(Developer).join(Game.developers).filter(Game.app_id == game_id).all()
+
+
+def get_developers_and_publishers_by_games(session: Session, game_ids):
+
+    if not isinstance(game_ids, list):
+        game_ids = [game_ids]
+
+    games = (
+        session.query(Game)
+        .filter(Game.app_id.in_(game_ids))  # Filtra per una lista di game_id
+        .options(joinedload(Game.publishers), joinedload(Game.developers))
+        .all()
+    )
+    
+    # Organizza i risultati in un dizionario
+    result = {}
+    for game in games:
+        result[game.app_id] = {
+            "developers": game.developers,
+            "publishers": game.publishers,
+        }
+    return result
+
 
 def get_games_by_tag(session: Session, tag_id: int):
     return session.query(Game) \
@@ -62,13 +93,3 @@ def get_top_tags(session: Session, limit: int = 5):
      .order_by(subquery.c.game_count.desc()) \
      .limit(limit) \
      .all()
-
-
-
-def get_publishers_by_game(session: Session, app_id: int):
-    return session.query(Publisher) \
-        .join(GamePublisher, GamePublisher.publisher_id == Publisher.publisher_id) \
-        .join(Game, Game.app_id == GamePublisher.app_id) \
-        .filter(Game.app_id == app_id) \
-        .distinct() \
-        .all()

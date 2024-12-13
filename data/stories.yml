@@ -2,6 +2,13 @@ stories:
   - story: Provide game information
     steps:
       - intent: game_info
+      - action: game_info_form
+      - active_loop: game_info_form
+      - slot_was_set:
+        - requested_slot: game
+      - slot_was_set:
+        - requested_slot: null
+      - active_loop: null
       - action: action_provide_game_info
 
   - story: get_detailed_recommendation_story
