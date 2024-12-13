@@ -1,5 +1,5 @@
 stories:
-  - story: Provide game information
+  - story: Provide_game_info
     steps:
       - intent: game_info
       - action: game_info_form
@@ -10,6 +10,18 @@ stories:
         - requested_slot: null
       - active_loop: null
       - action: action_provide_game_info
+  
+  - story: Provide_publishers_games
+    steps:
+      - intent: get_publisher_games
+      - action: get_publisher_games_form
+      - active_loop: get_publisher_games_form
+      - slot_was_set:
+        - requested_slot: publisher
+      - slot_was_set:
+        - requested_slot: null
+      - active_loop: null
+      - action: action_provide_publisher_games
 
   - story: get_detailed_recommendation_story
     steps:
@@ -22,6 +34,18 @@ stories:
           - requested_slot: publisher
       - active_loop: null
       - action: action_provide_recommendation
+
+  - story: get_genres_story
+    steps:
+    - intent: get_genres
+    - active_loop: null
+    - action: action_provide_genres 
+
+  - story: get_publishers_story
+    steps:
+    - intent: get_publishers
+    - active_loop: null
+    - action: action_provide_publishers
 
   - story: happy path
     steps:

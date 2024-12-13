@@ -18,20 +18,20 @@ nlu:
     - How much does [BioShock Infinite](game) cost?
     - Can you tell me the release date of [Hades](game)?
     - What is the price of [Red Dead Redemption 2](game)?
-    - Is [Overwatch 2](game) still available for purchase?
+    - Is [Half-Life 2](game) still available for purchase?
     - Tell me about [Apex Legends](game).
-    - What was the release date of [Final Fantasy VII Remake](game)?
+    - What was the release date of [Final Fantasy VII Remake INTERGRADE](game)?
     - How much does [Call of Duty: Modern Warfare II](game) cost now?
     - Is [Conan Exiles](game) free to play?
     - When was [Starfield](game) released?
     - What is the cost of [Assassin's Creed Odyssey](game)?
     - Is [Just Cause 3](game) free to download?
-    - Can you tell me when [Dying Light 2](game) was released?
+    - Can you tell me when [Dying Light](game) was released?
     - How much does [Hearts of Iron IV](game) cost?
     - Was [Elden Ring](game) released recently?
     - When did [Horizon Forbidden West Complete Edition](game) launch?
-    - Is [FIFA 23](game) free or paid?
-    - Tell me about the price of [Resident Evil 4 Remake](game).
+    - Is [EA SPORTS FIFA 23](game) free or paid?
+    - Tell me about the price of [Resident Evil 4](game).
 
 - intent: ask_recommendation
   examples: |
@@ -53,48 +53,95 @@ nlu:
 
 - intent: get_publisher_games
   examples: |
-    - [Electronic Arts](publisher)
-    - can you find games made by [Nintendo](publisher)?
-    - show  all games developed by [Ubisoft](publisher).
-    - i want to see games created by [Square enix](publisher).
-    - which games did [Bethesda](publisher) develop?
-    - find games from the publishers at [rockstar games](publisher).
-    - do you have any games made by [Valve](publisher)?
-    - list the games produced by [Activision](publisher).
-    - can you show me some games made by [ea sports](publisher)?
-    - what games are from the development team [capcom](publisher)?
-    - i’m looking for games developed by [insomniac games](publisher).
-    - what titles did [cd projekt red](publisher) work on?
-    - find games from [Blizzard entertainment](publisher).
-    - are there any games from [Bandai namco](publisher)?
-    - give me games developed by [Gameloft](publisher).
-    - can you list games created by [Treyarch](publisher)?
-    - what games did [Fromsoftware](publisher) create?
+    - show me games from [Electronic Arts](publisher)
+    - what games were developed by [Nintendo](publisher)?
+    - list the titles from [Ubisoft](publisher)
+    - show me all games by [Square Enix](publisher)
+    - can you list games made by [Bethesda](publisher)?
+    - find games from [Rockstar Games](publisher)
+    - are there any games developed by [Valve](publisher)?
+    - show me games by [Activision](publisher)
+    - list games made by [SEGA](publisher)
+    - what titles did [Capcom](publisher) develop?
+    - find games from [Insomniac Games](publisher)
+    - what games are from [CD Projekt Red](publisher)?
+    - can you show games by [Blizzard Entertainment, Inc.](publisher)?
+    - are there any games by [Bandai Namco](publisher)?
+    - show me games from [Gameloft](publisher)
+    - list games created by [Treyarch](publisher)
+    - what titles did [FromSoftware Inc.](publisher) create?
 
+- intent: get_publishers
+  examples: |
+    - What game publishers are available?
+    - Can you list all the publishers?
+    - Show me the list of publishers.
+    - Which publishers are in your collection?
+    - What are the names of the publishers you support?
+    - Can you provide a list of publishers?
+    - Who are the publishers you work with?
+    - What publishers are available in the database?
+    - Tell me about the publishers you have.
+    - What publishers are part of your collection?
+    - What publishers do you support?
+    - Give me a list of available publishers.
+    - Are there any publishers you can recommend?
+    
 - intent: get_recommendation
   examples: |
-    - [Looter Shooter](genre)
-    - I like [Cinematic](genre) games
-    - I prefer [Arcade](genre) games
-    - I enjoy [Co-op](genre) games
-    - I love [FPS](genre) games
-    - I'm into [Combat](genre) games
-    - [Strategy](genre) games are my favorite
-    - Recommend some [action](genre) games.
-    - Suggest a few [RPG](genre) games.
+    - Recommend me [Looter Shooter](genre) games.
+    - I like [Cinematic](genre) games.
+    - I prefer [Arcade](genre) games.
+    - I enjoy [Co-op](genre) games.
+    - I love [FPS](genre) games.
+    - I'm into [Combat](genre) games.
+    - [Strategy](genre) games are my favorite.
+    - Suggest some [action](genre) games.
+    - Recommend a few [RPG](genre) games.
     - I'm looking for good [horror](genre) games.
-    - List the best [adventure](genre) games out there.
-    - Provide some suggestions for [platformer](genre) games to try.
-    - Share any great [strategy](genre) games.
-    - Suggest some [racing](genre) games.
-    - I'd love to play a few [sandbox](genre) games; any ideas?
+    - List the best [adventure](genre) games.
+    - Suggest some [platformer](genre) games.
+    - Share great [strategy](genre) games.
+    - Recommend some [racing](genre) games.
+    - I'd love to play [sandbox](genre) games; any ideas?
     - Recommend popular [indie](genre) games.
     - Tell me about some good [puzzle](genre) games.
-    - Suggest some [MMORPG](genre) games.
-    - List the top [sports](genre) games these days.
-    - Suggest fun [simulation](genre) games to check out.
-    - Provide some [casual](genre) games to try.
-    - Share suggestions for [survival](genre) games.
+    - Suggest [MMORPG](genre) games.
+    - List the top [sports](genre) games.
+    - Suggest fun [simulation](genre) games.
+    - Recommend some [casual](genre) games.
+    - Share [survival](genre) game suggestions.
+
+- intent: get_genres
+  examples: |
+    - What genres are available?
+    - Can you show me the genres?
+    - List the game genres.
+    - What types of genres do you have?
+    - Show me all the genres.
+    - Can you tell me the genres?
+    - What genres can I pick?
+    - Give me a list of genres.
+    - What are the different genres?
+    - What genres are included?
+    - Are there any specific genres?
+    - Can you show me the categories of games?
+
+- intent: terminate
+  examples: |
+    - exit
+    - stop
+    - quit  
+    - leave
+    - end
+    - close
+    - i want to quit
+    - i wish to leave
+    - let's end it
+    - let's stop
+    - close the chat
+    - exit the conversation
+    - i'm not interested anymore
 
 - intent: greet
   examples: |

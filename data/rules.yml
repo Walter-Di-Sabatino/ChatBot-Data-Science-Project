@@ -19,3 +19,9 @@ rules:
       - intent: bot_challenge
       - action: utter_iamabot
 
+  - rule: Reset at terminate 
+    steps:
+    - intent: terminate
+    - active_loop: null
+    - action: utter_terminate_form
+    - action: action_reset_slots

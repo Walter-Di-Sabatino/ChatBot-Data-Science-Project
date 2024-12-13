@@ -12,6 +12,10 @@ intents:
   - game_info
   - get_recommendation
   - ask_recommendation
+  - get_publishers
+  - get_genres
+  - terminate
+  - get_publisher_games
 
 actions:
   - utter_iamabot
@@ -22,7 +26,12 @@ actions:
   - utter_ask_genre
   - utter_ask_publisher
   - action_provide_game_info
+  - action_provide_publisher_games
   - action_provide_recommendation
+  - action_provide_genres 
+  - action_provide_publishers
+  - action_reset_slots
+  - utter_terminate_form
 
 entities:
   - game
@@ -68,6 +77,10 @@ forms:
   game_info_form:
     required_slots:
       - game
+  
+  get_publisher_games_form:
+    required_slots:
+      - publisher
 
 responses:
 
@@ -109,6 +122,9 @@ responses:
     - text: "Hi! How are you?"
     - text: "Hello! How's it going?"
     - text: "Hey there! What's up?"
+  
+  utter_terminate_form:
+    - text: "Sure! Feel free to ask me anything."
 
 session_config:
   session_expiration_time: 60
