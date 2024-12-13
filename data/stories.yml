@@ -1,30 +1,9 @@
 stories:
-  - story: Provide_game_info
-    steps:
-      - intent: game_info
-      - action: game_info_form
-      - active_loop: game_info_form
-      - slot_was_set:
-        - requested_slot: game
-      - slot_was_set:
-        - requested_slot: null
-      - active_loop: null
-      - action: action_provide_game_info
-  
-  - story: Provide_publishers_games
-    steps:
-      - intent: get_publisher_games
-      - action: get_publisher_games_form
-      - active_loop: get_publisher_games_form
-      - slot_was_set:
-        - requested_slot: publisher
-      - slot_was_set:
-        - requested_slot: null
-      - active_loop: null
-      - action: action_provide_publisher_games
 
-  - story: get_detailed_recommendation_story
+  - story: get some recommendations
     steps:
+      - intent: start
+      - action: utter_iamabot
       - intent: ask_recommendation
       - action: detailed_recommendation_form
       - active_loop: detailed_recommendation_form
@@ -34,18 +13,23 @@ stories:
           - requested_slot: publisher
       - active_loop: null
       - action: action_provide_recommendation
+      - intent: goodbye
+      - action: utter_goodbye
 
-  - story: get_genres_story
+  - story: user stops form
     steps:
-    - intent: get_genres
-    - active_loop: null
-    - action: action_provide_genres 
-
-  - story: get_publishers_story
-    steps:
-    - intent: get_publishers
-    - active_loop: null
-    - action: action_provide_publishers
+      - intent: start
+      - action: utter_iamabot
+      - intent: ask_recommendation
+      - action: detailed_recommendation_form
+      - active_loop: detailed_recommendation_form
+      - intent: terminate
+      - action: utter_ask_continue
+      - intent: positive
+      - action: action_deactivate_loop
+      - active_loop: null
+      - action: utter_terminate_form
+      - action: action_reset_slots
 
   - story: happy path
     steps:

@@ -85,16 +85,16 @@ def get_top_games_by_publisher_and_tag(session, publisher_name, tag_name, limit=
         * func.log(func.coalesce(Game.positive - Game.negative, 0) + 1)
     )
 
-    return (
-        session.query(Game) 
-        .join(Game.publishers) 
-        .join(Game.tags) 
-        .filter(Publisher.name.ilike(publisher_name)) 
-        .filter(Tag.name.ilike(tag_name)) 
-        .order_by(score_expr.desc()) 
-        .limit(limit) 
-        .all()
-        )
+    query = session.query(Game).join(Game.publishers).join(Game.tags)
+
+    # Aggiungi i filtri solo se i parametri non sono None
+    if publisher_name:
+        query = query.filter(Publisher.name.ilike(publisher_name))
+    if tag_name:
+        query = query.filter(Tag.name.ilike(tag_name))
+
+    return query.order_by(score_expr.desc()).limit(limit).all()
+
 
 def get_top_games_by_publisher(session, publisher_name, limit=5):
     score_expr = (

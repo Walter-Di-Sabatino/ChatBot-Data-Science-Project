@@ -16,6 +16,8 @@ intents:
   - get_genres
   - terminate
   - get_publisher_games
+  - positive
+  - negative
 
 actions:
   - utter_iamabot
@@ -24,6 +26,7 @@ actions:
   - utter_did_that_help
   - utter_cheer_up
   - utter_ask_genre
+  - utter_ask_continue
   - utter_ask_publisher
   - action_provide_game_info
   - action_provide_publisher_games
@@ -113,6 +116,9 @@ responses:
     - text: "Awesome, keep going!"
     - text: "Glad to hear that!"
 
+  utter_ask_continue:
+    - text: "Are you sure you want to exit the form?"
+
   utter_goodbye:
     - text: "Bye"
     - text: "Goodbye, take care!"
@@ -124,7 +130,7 @@ responses:
     - text: "Hey there! What's up?"
   
   utter_terminate_form:
-    - text: "Sure! Feel free to ask me anything."
+    - text: "Form closed. Let me know if you need more help"
 
 session_config:
   session_expiration_time: 60

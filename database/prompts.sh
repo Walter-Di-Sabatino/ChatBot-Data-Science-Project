@@ -44,6 +44,13 @@ alembic upgrade head
 alembic show <versione>           # Mostra il dettaglio di una specifica versione
 
 
+- rule: Reset at terminate 
+    steps:
+    - intent: terminate
+    - active_loop: null
+    - action: utter_terminate_form
+    - action: action_reset_slots
+
 nlu:
   - lookup: game_names
     file: "lookup_files/game_names.csv"
