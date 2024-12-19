@@ -50,21 +50,29 @@ rules:
 
   - rule: activate_termination
     condition: 
-    - active_loop: detailed_recommendation_form
+      - active_loop: detailed_recommendation_form
     steps: 
-    - intent: terminate
-    - action: utter_ask_continue
+      - intent: terminate
+      - action: utter_ask_continue
 
   - rule: deactivate_detailed_recommendation_form
     condition: 
-    - active_loop: detailed_recommendation_form
+      - active_loop: detailed_recommendation_form
     steps:
-    - action: utter_ask_continue 
-    - intent: positive
-    - action: action_deactivate_loop
-    - active_loop: null
-    - action: utter_terminate_form
-    - action: action_reset_slots
+      - action: utter_ask_continue 
+      - intent: positive
+      - action: action_deactivate_loop
+      - active_loop: null
+      - action: utter_terminate_form
+      - action: action_reset_slots
+
+  - rule: handle_termination_interruption
+    condition: 
+      - active_loop: detailed_recommendation_form
+    steps:
+      - action: utter_ask_continue
+      - intent: negative
+      - action: action_resume_form
 
   - rule: start
     steps:

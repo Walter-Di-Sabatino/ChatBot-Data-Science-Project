@@ -18,6 +18,7 @@ from rasa_sdk.events import SlotSet, AllSlotsReset
 from rasa_sdk import Tracker, FormValidationAction
 from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
+from rasa_sdk.events import ActiveLoop
 
 # Carica le variabili di ambiente dal file .env
 load_dotenv()
@@ -232,7 +233,16 @@ class ActionProvideGenreRecommendation(Action):
 
         session.close()
         return [SlotSet("genre", None), SlotSet("publisher", None)]
+    
+class ActionResumeForm(Action):
+    def name(self):
+        return "action_resume_form"
 
+    def run(self, dispatcher, tracker, domain):
+        # Riattiva il ciclo della form senza resettare gli slot
+        dispatcher.utter_message(text="Alright, let's pick up where we left off!")
+        return [ActiveLoop("detailed_recommendation_form")]
+    
 class ActionResetSlots(Action):
     def name(self) -> Text:
         return "action_reset_slots"

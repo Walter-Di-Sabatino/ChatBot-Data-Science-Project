@@ -35,6 +35,7 @@ actions:
   - action_provide_publishers
   - action_reset_slots
   - utter_terminate_form
+  - action_resume_form
 
 entities:
   - game
