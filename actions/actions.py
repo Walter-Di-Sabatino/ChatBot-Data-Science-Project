@@ -60,30 +60,34 @@ def format_names(names):
 
     return all_names
 
-def game_info_response(game, publishers_developers):
-    pub_names = format_names(publishers_developers[game.app_id]["publishers"])
-    dev_names = format_names(publishers_developers[game.app_id]["developers"])
-
-    release_date = game.release_date.strftime("%B %d, %Y") if game.release_date else None
-    response = f"{game.name} was released on {release_date} by {pub_names}. It costs {game.price} USD and was developed by {dev_names}."
+def game_info_response(game):
+    # Recupero dei nomi degli editori e degli sviluppatori
+    pub_names = format_names(game.publishers)
+    dev_names = format_names(game.developers)
+    
+    # Recupero della data di rilascio
+    release_date = game.release_date.strftime("%B %d, %Y") if game.release_date else "N/A"
+    
+    # Recupero dei dettagli aggiuntivi
+    price = f"${game.price:.2f}" if game.price else "Price not available"
+    short_description = game.short_description if game.short_description else "No short description available."
+    average_playtime = game.average_playtime if game.average_playtime else "Not available"
+    reviews = game.reviews if game.reviews else "No reviews available."
+    metacritic_score = f"Metacritic score: {game.metacritic_score}" if game.metacritic_score else "No Metacritic score available."
+    supported_languages = ', '.join([language.name for language in game.supported_languages]) if game.supported_languages else "No supported languages listed."
+    
+    # Formattazione della risposta con informazioni aggiuntive
+    response = (
+        f"{game.name} was released on {release_date} by {pub_names}. "
+        f"It costs {price} and was developed by {dev_names}. "
+        f"Description: {short_description}\n"
+        f"Average playtime: {average_playtime} minutes.\n"
+        f"Reviews: {reviews}\n"
+        f"{metacritic_score}\n"
+        f"Languages supported: {supported_languages}"
+    )
+    
     return response
-
-def fuzzy_finding(check_name, names, threshold=50):
-    # Inizializza variabili per tenere traccia del miglior punteggio e del miglior gioco
-    best_name = None
-    highest_score = 0
-
-    # Applica fuzzywuzzy per trovare la corrispondenza più simile
-    for name in names:
-        # Usa fuzz.ratio per un confronto più completo
-        score = fuzz.ratio(name.name.lower(), check_name.lower())  # Confronto case-insensitive
-        
-        # Se il punteggio è maggiore del punteggio più alto trovato finora e supera la soglia
-        if score > highest_score and score >= threshold:
-            highest_score = score
-            best_name = name
-
-    return best_name
 
 
 class ActionProvideGameInfo(Action):
@@ -101,20 +105,11 @@ class ActionProvideGameInfo(Action):
         
         session = get_session()
 
-        # all_games = get_all_games(session)
-        # best_game = fuzzy_finding(original_game, all_games)
-        # game = get_game_by_name(session, best_game.name)
-
         game = get_game_by_name(session, original_game)
 
         if game:
-            publishers_developers = get_developers_and_publishers_by_games(session , game.app_id)
-
-            response = game_info_response(game, publishers_developers)
-            
-            dispatcher.utter_message(response)
-
-            dispatcher.utter_message(image=game.header_image, text=game.short_description)
+            response = game_info_response(game)
+            dispatcher.utter_message(image=game.header_image, text = response)
         else:
             dispatcher.utter_message(text=f"Sorry, I couldn't retrieve details for the game '{original_game}'.")
         
@@ -142,13 +137,10 @@ class ActionProvidePublisherGames(Action):
             dispatcher.utter_message(text=f"Sorry, I couldn't find any games for the publisher {original_publisher}.")
         else:
             dispatcher.utter_message(text=f"Here are 5 of our reccomendations based on the publisher {original_publisher}:")
-            games_ids = [game.app_id for game in games]
-            publishers_developers = get_developers_and_publishers_by_games(session , games_ids)
+
             for game in games:
-                response = ""
-                response += game_info_response(game, publishers_developers)
-                response += game.short_description
-                dispatcher.utter_message(image=game.header_image, text=response)
+                response = game_info_response(game)
+                dispatcher.utter_message(image=game.header_image, text = response)
         
         session.close()
         return [SlotSet("publisher", None)]
@@ -227,13 +219,10 @@ class ActionProvideGenreRecommendation(Action):
             dispatcher.utter_message(text=f"Here are 5 of our reccomendations based on the {genre} and {publisher} combination:")
 
             games_ids = [game.app_id for game in games]
-            publishers_developers = get_developers_and_publishers_by_games(session , games_ids)
             for game in games:
 
-                response = ""
-                response += game_info_response(game, publishers_developers)
-                response += game.short_description
-                dispatcher.utter_message(image=game.header_image, text=response)
+                response = game_info_response(game)
+                dispatcher.utter_message(image=game.header_image, text = response)
 
         session.close()
         return [SlotSet("genre", None), SlotSet("publisher", None)]
