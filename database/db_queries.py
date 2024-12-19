@@ -3,6 +3,12 @@ from database.models import *
 from sqlalchemy import func, case
 from sqlalchemy.orm import joinedload
 
+def get_all_tag_names(session: Session):
+    return session.query(Tag.name).all()
+
+def get_all_publisher_names(session: Session):
+    return session.query(Publisher.name).all()
+
 def get_all_games(session: Session):
     return session.query(Game).all()
 

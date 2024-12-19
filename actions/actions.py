@@ -20,6 +20,10 @@ from rasa_sdk.executor import CollectingDispatcher
 from rasa_sdk.types import DomainDict
 from rasa_sdk.events import ActiveLoop
 
+import logging
+logger = logging.getLogger(__name__)
+logging.basicConfig(level="DEBUG")
+
 # Carica le variabili di ambiente dal file .env
 load_dotenv()
 
@@ -242,7 +246,58 @@ class ActionResumeForm(Action):
         # Riattiva il ciclo della form senza resettare gli slot
         dispatcher.utter_message(text="Alright, let's pick up where we left off!")
         return [ActiveLoop("detailed_recommendation_form")]
-    
+
+class ValidateDetailedRecommendationForm(FormValidationAction):
+    def name(self) -> Text:
+        return "validate_detailed_recommendation_form"
+
+
+    async def validate_genre(
+        self,
+        slot_value: Any,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: DomainDict,
+    ):
+        session = get_session()
+        genres = get_all_tag_names(session)
+        genres = [genre[0].lower() for genre in genres]
+
+        slot_value = tracker.get_slot('genre')
+
+        logger.info(f"Tracker: {slot_value}")
+
+        if slot_value:
+            # Convertiamo e verifichiamo se il valore è valido
+            normalized_value = slot_value.strip().lower()
+            if normalized_value in genres:
+                return {'genre': slot_value.strip()}
+        # Se il valore non è valido, inviamo un messaggio di errore
+        dispatcher.utter_message(template="utter_unclear_input")
+        return {'genre': None}
+        
+    async def validate_publisher(
+        self,
+        slot_value: Any,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: DomainDict,
+    ):
+        session = get_session()
+        publishers = get_all_publisher_names(session)
+        publishers = [publisher[0].lower() for publisher in publishers]
+
+        slot_value = tracker.get_slot('publisher')
+        
+        if slot_value:
+            # Convertiamo e verifichiamo se il valore è valido
+            normalized_value = slot_value.strip().lower()
+            if normalized_value in publishers:
+                return {'publisher': slot_value.strip()}
+        # Se il valore non è valido, inviamo un messaggio di errore
+        dispatcher.utter_message(template="utter_unclear_input")
+        return {'publisher': None}
+
 class ActionResetSlots(Action):
     def name(self) -> Text:
         return "action_reset_slots"

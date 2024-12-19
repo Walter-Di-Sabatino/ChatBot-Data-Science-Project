@@ -36,6 +36,8 @@ actions:
   - action_reset_slots
   - utter_terminate_form
   - action_resume_form
+  - utter_unclear_input
+  - validate_detailed_recommendation_form
 
 entities:
   - game
@@ -51,6 +53,9 @@ slots:
     mappings:
       - type: from_entity
         entity: genre
+        conditions:
+          - active_loop: detailed_recommendation_form
+            requested_slot: genre
 
   language:
     type: text
@@ -65,12 +70,20 @@ slots:
     mappings:
       - type: from_entity
         entity: publisher
+        conditions:
+          - active_loop: detailed_recommendation_form
+            requested_slot: publisher
+          - active_loop: get_publisher_games_form
+            requested_slot: publisher
 
   game:
     type: text
     mappings:
       - type: from_entity
         entity: game
+        conditions:
+          - active_loop: game_info_form
+            requested_slot: game
 
 forms:
   detailed_recommendation_form:
@@ -87,6 +100,9 @@ forms:
       - publisher
 
 responses:
+
+  utter_unclear_input:
+    - text: "I'm not sure what you mean. Could you be more specific?"
 
   utter_ask_genre:
     - text: "What type of games are you interested in?"
