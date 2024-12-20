@@ -1,6 +1,6 @@
 rules:
 
-  - rule: Provide_game_info
+  - rule: get game info
     steps:
       - intent: game_info
       - action: game_info_form
@@ -12,7 +12,7 @@ rules:
       - active_loop: null
       - action: action_provide_game_info
 
-  - rule: Provide_publishers_games
+  - rule: get publisher games
     steps:
       - intent: get_publisher_games
       - action: get_publisher_games_form
@@ -24,38 +24,41 @@ rules:
       - active_loop: null
       - action: action_provide_publisher_games
 
-  - rule: get_genres
+  - rule: get genres
     steps:
       - intent: get_genres
-      - active_loop: null
       - action: action_provide_genres
 
-  - rule: get_publishers
+  - rule: get publishers
     steps:
       - intent: get_publishers
-      - active_loop: null
       - action: action_provide_publishers
   
-  - rule: activate_detailed_recommendation_form
+  - rule: activate detailed recommendation form
     steps:
       - intent: ask_recommendation
       - action: detailed_recommendation_form
       - active_loop: detailed_recommendation_form
+
+  - rule: provide recommendation
+    condition:
+      - active_loop: detailed_recommendation_form
       - slot_was_set:
-          - requested_slot: genre
+         - requested_slot: genre
       - slot_was_set:
-          - requested_slot: publisher
+         - requested_slot: publisher
+    steps:
       - active_loop: null
       - action: action_provide_recommendation
 
-  - rule: activate_termination
+  - rule: activate termination
     condition: 
       - active_loop: detailed_recommendation_form
     steps: 
       - intent: terminate
       - action: utter_ask_continue
 
-  - rule: deactivate_detailed_recommendation_form
+  - rule: deactivate detailed recommendation form
     condition: 
       - active_loop: detailed_recommendation_form
     steps:
@@ -66,7 +69,7 @@ rules:
       - action: utter_terminate_form
       - action: action_reset_slots
 
-  - rule: handle_termination_interruption
+  - rule: handle termination interruption
     condition: 
       - active_loop: detailed_recommendation_form
     steps:

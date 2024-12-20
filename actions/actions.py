@@ -71,24 +71,37 @@ def game_info_response(game):
     # Recupero dei dettagli aggiuntivi
     price = f"${game.price:.2f}" if game.price else "Price not available"
     short_description = game.short_description if game.short_description else "No short description available."
-    average_playtime = game.average_playtime if game.average_playtime else "Not available"
+    required_age = game.required_age if game.required_age else "Not available"
+    estimated_owners = game.estimated_owners if game.estimated_owners else "Not available"
     reviews = game.reviews if game.reviews else "No reviews available."
     metacritic_score = f"Metacritic score: {game.metacritic_score}" if game.metacritic_score else "No Metacritic score available."
     supported_languages = ', '.join([language.name for language in game.supported_languages]) if game.supported_languages else "No supported languages listed."
     
+    # Recupero del supporto per i sistemi operativi
+    os_support = []
+    if game.support_windows:
+        os_support.append("Windows")
+    if game.support_mac:
+        os_support.append("Mac")
+    if game.support_linux:
+        os_support.append("Linux")
+    
+    os_support_text = ', '.join(os_support) if os_support else "No operating system support listed."
+    
     # Formattazione della risposta con informazioni aggiuntive
     response = (
-        f"{game.name} was released on {release_date} by {pub_names}. "
-        f"It costs {price} and was developed by {dev_names}. "
+        f"{game.name} was released on {release_date} by {pub_names}.\n"
+        f"It costs {price} and was developed by {dev_names}.\n"
+        f"Required Age: {required_age}.\n"
         f"Description: {short_description}\n"
-        f"Average playtime: {average_playtime} minutes.\n"
+        f"Estimated owners: {estimated_owners}.\n"
         f"Reviews: {reviews}\n"
         f"{metacritic_score}\n"
-        f"Languages supported: {supported_languages}"
+        f"Languages supported: {supported_languages}\n"
+        f"Operating System Support: {os_support_text}"
     )
     
     return response
-
 
 class ActionProvideGameInfo(Action):
     def name(self) -> Text:
@@ -101,7 +114,7 @@ class ActionProvideGameInfo(Action):
         original_game = tracker.get_slot("game")
         if not original_game:
             dispatcher.utter_message(text="I need the name of the game to provide details.")
-            return [SlotSet("publisher", None)]
+            return [SlotSet("game", None)]
         
         session = get_session()
 

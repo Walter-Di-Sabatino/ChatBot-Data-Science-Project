@@ -38,7 +38,6 @@ def get_top_games_by_publisher_and_tag(session, publisher_name, tag_name, limit=
 
     query = session.query(Game).join(Game.publishers).join(Game.tags)
 
-    # Aggiungi i filtri solo se i parametri non sono None
     if publisher_name:
         query = query.filter(Publisher.name.ilike(publisher_name))
     if tag_name:
