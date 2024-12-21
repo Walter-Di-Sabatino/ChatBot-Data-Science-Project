@@ -62,6 +62,22 @@ rules:
       - action: action_provide_recommendation
       - action: action_reset_slots
 
+  - rule: Handle interruption intents during forms
+    condition:
+      - active_loop: detailed_recommendation_form
+    steps:
+      - intent: game_info
+      - action: utter_default
+      - action: action_resume_form
+
+  - rule: Handle interruption intents during forms (publisher games)
+    condition:
+      - active_loop: detailed_recommendation_form
+    steps:
+      - intent: get_publisher_games
+      - action: utter_default
+      - action: action_resume_form
+
   - rule: activate termination
     condition: 
       - active_loop: detailed_recommendation_form
