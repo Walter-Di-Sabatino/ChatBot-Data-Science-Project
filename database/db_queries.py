@@ -30,6 +30,42 @@ def get_top_tags(session: Session):
     .all()
 )
 
+def get_top_games(session, limit=5):
+    score_expr = (
+        (func.coalesce(Game.positive, 0) / func.coalesce(Game.positive + Game.negative, 1))
+        * func.log(func.coalesce(Game.positive - Game.negative, 0) + 1)
+    )
+
+    query = session.query(Game)
+
+    return query.order_by(score_expr.desc()).limit(limit).all()
+
+def get_top_games_by_tag(session, tag_name, limit=5):
+    score_expr = (
+        (func.coalesce(Game.positive, 0) / func.coalesce(Game.positive + Game.negative, 1))
+        * func.log(func.coalesce(Game.positive - Game.negative, 0) + 1)
+    )
+
+    query = session.query(Game).join(Game.tags)
+
+    if tag_name:
+        query = query.filter(Tag.name.ilike(tag_name))
+
+    return query.order_by(score_expr.desc()).limit(limit).all()
+
+def get_top_games_by_publisher(session, publisher_name, limit=5):
+    score_expr = (
+        (func.coalesce(Game.positive, 0) / func.coalesce(Game.positive + Game.negative, 1))
+        * func.log(func.coalesce(Game.positive - Game.negative, 0) + 1)
+    )
+
+
+    query = session.query(Game).join(Game.publishers)
+    if publisher_name:
+        query = query.filter(Publisher.name.ilike(publisher_name))
+
+    return query.order_by(score_expr.desc()).limit(limit).all()
+
 def get_top_games_by_publisher_and_tag(session, publisher_name, tag_name, limit=5):
     score_expr = (
         (func.coalesce(Game.positive, 0) / func.coalesce(Game.positive + Game.negative, 1))
@@ -44,18 +80,3 @@ def get_top_games_by_publisher_and_tag(session, publisher_name, tag_name, limit=
         query = query.filter(Tag.name.ilike(tag_name))
 
     return query.order_by(score_expr.desc()).limit(limit).all()
-
-def get_top_games_by_publisher(session, publisher_name, limit=5):
-    score_expr = (
-        (func.coalesce(Game.positive, 0) / func.coalesce(Game.positive + Game.negative, 1))
-        * func.log(func.coalesce(Game.positive - Game.negative, 0) + 1)
-    )
-
-    return (
-        session.query(Game) 
-        .join(Game.publishers) 
-        .filter(Publisher.name.ilike(publisher_name)) 
-        .order_by(score_expr.desc()) 
-        .limit(limit) 
-        .all()
-        )

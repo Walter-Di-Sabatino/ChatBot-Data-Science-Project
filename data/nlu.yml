@@ -161,7 +161,55 @@ nlu:
     - false
     - that doesn't sound good
     - incorrect
- 
+
+- intent: genre_filter_positive
+  examples: |
+    - yes genre
+    - Yes, I want to filter by genre
+    - Filter by genre, please
+    - Yes, let me choose a genre
+    - I'd like to select a genre
+    - I prefer filtering by genre
+    - Let's filter by genre
+    - Genre-based filtering sounds good
+
+- intent: genre_filter_negative
+  examples: |
+    - No genre
+    - No, I don't want to filter by genre
+    - No genre filter
+    - I don't need a genre filter
+    - Skip genre filtering
+    - No, no genre filter for me
+    - Any genre is fine
+    - No genre preference
+    - Don't filter by genre
+    - No specific genre needed
+
+- intent: publisher_filter_positive
+  examples: |
+    - Yes publisher
+    - Yes, I want to filter by publisher
+    - Filter by publisher, please
+    - Yes, let me choose a publisher
+    - I'd like to filter publishers
+    - Publisher filtering works for me
+    - Let's filter by publisher
+    - Publisher-based filtering sounds good
+
+- intent: publisher_filter_negative
+  examples: |
+    - No publisher
+    - No, I don't want to filter by publisher
+    - No publisher filter
+    - I don't need a publisher filter
+    - Skip publisher filtering
+    - No, no publisher filter for me
+    - Any publisher is fine
+    - No publisher preference
+    - Don't filter by publisher
+    - No specific publisher needed
+
 - intent: greet
   examples: |
     - hey
@@ -190,16 +238,6 @@ nlu:
     - see you around
     - bye bye
     - see you later
-
-- intent: deny
-  examples: |
-    - no
-    - n
-    - never
-    - I don't think so
-    - don't like that
-    - no way
-    - not really
 
 - intent: mood_great
   examples: |

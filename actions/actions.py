@@ -207,7 +207,7 @@ class ActionProvidePublishers(Action):
         session.close()
         return []
 
-class ActionProvideGenreRecommendation(Action):
+class ActionProvideRecommendation(Action):
     def name(self) -> Text:
         return "action_provide_recommendation"
 
@@ -217,28 +217,58 @@ class ActionProvideGenreRecommendation(Action):
 
         genre = tracker.get_slot("genre")
         publisher = tracker.get_slot("publisher")
+        genre_filter = tracker.get_slot("genre_filter")
+        publisher_filter = tracker.get_slot("publisher_filter")
 
-        if not genre or not publisher:
-            dispatcher.utter_message(text="Please provide both a genre and a publisher for the recommendation.")
-            return [SlotSet("genre", None), SlotSet("publisher", None)]
-        
+        if genre == "NO": genre = False
+        if publisher == "NO": publisher = False
+
+        logger.info(f"Tracker: yolo")
+
         session = get_session()
 
-        games = get_top_games_by_publisher_and_tag(session, publisher, genre )
+        negative_response = ""
+        positive_response = ""
+
+        if not genre and not publisher and not genre_filter and not publisher_filter:
+            games = get_top_games(session, limit=1000)
+            games = random.sample(games, 5)
+            positive_response = "Here are 5 games across all genres and publishers."
+            negative_response = "Sorry, I couldn't retrieve the top games right now."
+
+        elif genre and publisher and genre_filter and publisher_filter:
+            games = get_top_games_by_publisher_and_tag(session, publisher, genre, limit = 100)
+            games = random.sample(games, 5)
+            positive_response = f"Here are 5 of our recommendations based on the {genre} and {publisher} combination:"
+            negative_response = f"Sorry, I couldn't find any games for the {genre} and {publisher} combination."
+
+        elif not genre and publisher and not genre_filter and publisher_filter:
+            games = get_top_games_by_publisher(session, publisher, limit=100)
+            games = random.sample(games, 5)
+
+            logger.info(f"Tracker: {games[0].name}")
+
+            positive_response = f"Here are 5 games published by {publisher}:"
+            negative_response = f"Sorry, I couldn't find any games published by {publisher}."
+
+        elif genre and not publisher and genre_filter and not publisher_filter:
+            games = get_top_games_by_tag(session, genre, limit= 500)
+            games = random.sample(games, 5)
+            positive_response = f"Here are 5 games in the {genre} genre:"
+            negative_response = f"Sorry, I couldn't find any games in the {genre} genre."
+
 
         if not games:
-            dispatcher.utter_message(text=f"Sorry, I couldn't find any games for the {genre} and {publisher} combination.")
+            dispatcher.utter_message(text=negative_response)
         else:
-            dispatcher.utter_message(text=f"Here are 5 of our reccomendations based on the {genre} and {publisher} combination:")
+            dispatcher.utter_message(text=positive_response)
 
-            games_ids = [game.app_id for game in games]
             for game in games:
-
                 response = game_info_response(game)
                 dispatcher.utter_message(image=game.header_image, text = response)
 
         session.close()
-        return [SlotSet("genre", None), SlotSet("publisher", None)]
+        return [SlotSet("genre", None), SlotSet("publisher", None), SlotSet("genre_filter", True), SlotSet("publisher_filter", True)]
     
 class ActionResumeForm(Action):
     def name(self):
@@ -253,21 +283,43 @@ class ValidateDetailedRecommendationForm(FormValidationAction):
     def name(self) -> Text:
         return "validate_detailed_recommendation_form"
 
-
-    async def validate_genre(
+    def validate_genre_filter(
         self,
-        slot_value: Any,
+        value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: DomainDict,
-    ):
+        domain: Dict[Text, Any]) -> Dict[Text, Any]:
+
+        slot_value = tracker.get_slot('genre_filter')
+        
+        logger.info(f"Tracker: yolo1")
+
+        if slot_value == False:
+            dispatcher.utter_message(text="Ok, I won't filter by genre.")
+            return {"genre_filter": False, "genre": "NO"}
+        elif slot_value == True:
+            return {"genre_filter": True}
+        
+        return {"genre_filter": None}
+
+    def validate_genre(
+        self,
+        value: Any,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any]) -> Dict[Text, Any]:
+
+        logger.info(f"Tracker: yolo2")
+
+        if not tracker.get_slot('genre_filter'):
+            return {"genre": "NO"}
+
+
         session = get_session()
         genres = get_all_tag_names(session)
         genres = [genre[0].lower() for genre in genres]
 
         slot_value = tracker.get_slot('genre')
-
-        logger.info(f"Tracker: {slot_value}")
 
         if slot_value:
             # Convertiamo e verifichiamo se il valore è valido
@@ -275,29 +327,52 @@ class ValidateDetailedRecommendationForm(FormValidationAction):
             if normalized_value in genres:
                 return {'genre': slot_value.strip()}
         # Se il valore non è valido, inviamo un messaggio di errore
-        dispatcher.utter_message(template="utter_unclear_input")
         return {'genre': None}
-        
-    async def validate_publisher(
+
+    def validate_publisher_filter(
         self,
-        slot_value: Any,
+        value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
-        domain: DomainDict,
-    ):
+        domain: Dict[Text, Any]) -> Dict[Text, Any]:
+
+        slot_value = tracker.get_slot('publisher_filter')
+
+        logger.info(f"Tracker: yolo3")
+        
+        if not slot_value:
+            dispatcher.utter_message(text="Ok, I won't filter by publisher.")
+            return {"publisher_filter": False, "publisher": "NO"}
+        elif slot_value:
+            return {"publisher_filter": True}
+        
+        return {"publisher_filter": None}
+        
+    def validate_publisher(
+        self,
+        value: Any,
+        dispatcher: CollectingDispatcher,
+        tracker: Tracker,
+        domain: Dict[Text, Any]) -> Dict[Text, Any]:
+
+        logger.info(f"Tracker: yolo4")
+
+        if not tracker.get_slot('publisher_filter'):
+            return {"publisher": "NO"}
+
         session = get_session()
         publishers = get_all_publisher_names(session)
         publishers = [publisher[0].lower() for publisher in publishers]
 
         slot_value = tracker.get_slot('publisher')
-        
+
         if slot_value:
             # Convertiamo e verifichiamo se il valore è valido
             normalized_value = slot_value.strip().lower()
             if normalized_value in publishers:
+                logger.info(f"Tracker: {slot_value.strip()}")
                 return {'publisher': slot_value.strip()}
         # Se il valore non è valido, inviamo un messaggio di errore
-        dispatcher.utter_message(template="utter_unclear_input")
         return {'publisher': None}
 
 class ActionResetSlots(Action):

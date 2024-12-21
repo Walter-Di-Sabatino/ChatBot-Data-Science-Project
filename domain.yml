@@ -4,8 +4,6 @@ intents:
   - start
   - greet
   - goodbye
-  - affirm
-  - deny
   - mood_great
   - mood_unhappy
   - bot_challenge
@@ -18,6 +16,10 @@ intents:
   - get_publisher_games
   - positive
   - negative
+  - genre_filter_positive
+  - genre_filter_negative
+  - publisher_filter_positive
+  - publisher_filter_negative
 
 actions:
   - utter_iamabot
@@ -38,6 +40,8 @@ actions:
   - action_resume_form
   - utter_default
   - validate_detailed_recommendation_form
+  - utter_ask_genre_filter
+  - utter_ask_publisher_filter
 
 entities:
   - game
@@ -46,6 +50,51 @@ entities:
   - publisher
 
 slots:
+  genre_filter:
+    type: bool
+    influence_conversation: true
+    mappings:
+      - type: from_intent
+        value: true
+        intent: genre_filter_positive
+        not_intent: 
+          - positive
+          - publisher_filter_positive
+        conditions:
+          - active_loop: detailed_recommendation_form
+          - requested_slot: genre_filter
+      - type: from_intent
+        value: false
+        intent: genre_filter_negative
+        not_intent: 
+          - negative
+          - publisher_filter_negative
+        conditions:
+          - active_loop: detailed_recommendation_form
+          - requested_slot: genre_filter
+
+  publisher_filter:
+    type: bool
+    influence_conversation: true
+    mappings:
+      - type: from_intent
+        value: true
+        intent: publisher_filter_positive
+        not_intent: 
+          - positive
+          - genre_filter_positive
+        conditions:
+          - active_loop: detailed_recommendation_form
+          - requested_slot: publisher_filter
+      - type: from_intent
+        value: false
+        intent: publisher_filter_negative
+        not_intent: 
+          - negative
+          - genre_filter_negative
+        conditions:
+          - active_loop: detailed_recommendation_form
+          - requested_slot: publisher_filter
 
   genre:
     type: text
@@ -54,19 +103,19 @@ slots:
       - type: from_entity
         entity: genre
 
-  language:
-    type: text
-    influence_conversation: true
-    mappings:
-      - type: from_entity
-        entity: language
-
   publisher:
     type: text
     influence_conversation: true
     mappings:
       - type: from_entity
         entity: publisher
+
+  language:
+    type: text
+    influence_conversation: true
+    mappings:
+      - type: from_entity
+        entity: language
 
   game:
     type: text
@@ -78,7 +127,9 @@ slots:
 forms:
   detailed_recommendation_form:
     required_slots:
+      - genre_filter
       - genre
+      - publisher_filter
       - publisher
   
   game_info_form:
@@ -94,11 +145,23 @@ responses:
   utter_default:
     - text: "I'm not sure what you mean. Could you be more specific?"
 
+  utter_ask_genre_filter:
+    - text: "Do you want to filter by genre?"
+    - text: "Shall I filter the results by genre for you?"
+    - text: "Should I apply a filter for genres?"
+    - text: "Do you prefer to filter by a specific genre?"
+
   utter_ask_genre:
     - text: "What type of games are you interested in?"
     - text: "Can you tell me which genres of games you like?"
     - text: "What are your favorite types of games?"
     - text: "Are there any specific genres or themes you prefer when playing games?"
+
+  utter_ask_publisher_filter:
+    - text: "Do you want to filter by publisher?"
+    - text: "Shall I filter the results by publisher for you?"
+    - text: "Should I apply a filter for a publisher?"
+    - text: "Do you prefer to filter by a specific publisher?"
 
   utter_ask_publisher:
     - text: "What game publishers do you prefer?"

@@ -1,0 +1,7 @@
+{
+  "rule_only_slots": [
+    "genre",
+    "publisher"
+  ],
+  "rule_only_loops": []
+}
