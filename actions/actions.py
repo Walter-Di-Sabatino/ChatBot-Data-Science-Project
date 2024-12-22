@@ -290,7 +290,7 @@ class ActionProvideRecommendation(Action):
                 game_info_response_dispatched(dispatcher, game)
 
         session.close()
-        return [SlotSet("genre", None), SlotSet("publisher", None), SlotSet("genre_filter", True), SlotSet("publisher_filter", True)]
+        return [AllSlotsReset()]
 
     
 class ActionResumeForm(Action):
