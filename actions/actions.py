@@ -1,27 +1,26 @@
-import csv
-from typing import Any, Text, Dict, List
-from dotenv import load_dotenv
+# Standard Library Imports
 import os
+import random
+import math
+import logging
+
+# Third-Party Libraries
+import requests
 import validators
-from rasa_sdk import Action, Tracker
-from rasa_sdk.executor import CollectingDispatcher
+from dotenv import load_dotenv
+from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker, Session
-from sqlalchemy import create_engine
+from typing import Any, Text, Dict, List
+
+# Rasa SDK Imports
+from rasa_sdk import Action, Tracker, FormValidationAction
+from rasa_sdk.executor import CollectingDispatcher
+from rasa_sdk.events import SlotSet, AllSlotsReset, ActiveLoop
+
+# Custom Modules
 from database.db_queries import *
 from database.models import *
-from rasa_sdk.events import SlotSet
-import random
-from sqlalchemy import func
-import math
-from fuzzywuzzy import fuzz
-from typing import Text, List, Any, Dict
-from rasa_sdk.events import SlotSet, AllSlotsReset
-from rasa_sdk import Tracker, FormValidationAction
-from rasa_sdk.executor import CollectingDispatcher
-from rasa_sdk.types import DomainDict
-from rasa_sdk.events import ActiveLoop
 
-import logging
 logger = logging.getLogger(__name__)
 logging.basicConfig(level="DEBUG")
 
@@ -103,9 +102,6 @@ def game_info_response(game):
     )
     
     return response
-
-import requests
-import validators
 
 def game_info_response_dispatched(dispatcher, game):
     response = game_info_response(game)

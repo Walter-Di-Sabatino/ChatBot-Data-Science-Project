@@ -53,49 +53,45 @@ entities:
 slots:
   genre_filter:
     type: bool
-    influence_conversation: true
+    influence_conversation: True
     mappings:
       - type: from_intent
         value: true
-        intent: genre_filter_positive
-        not_intent: 
-          - positive
-          - publisher_filter_positive
-        conditions:
-          - active_loop: detailed_recommendation_form
-          - requested_slot: genre_filter
-      - type: from_intent
-        value: false
-        intent: genre_filter_negative
-        not_intent: 
-          - negative
-          - publisher_filter_negative
-        conditions:
-          - active_loop: detailed_recommendation_form
-          - requested_slot: genre_filter
-
-  publisher_filter:
-    type: bool
-    influence_conversation: true
-    mappings:
-      - type: from_intent
-        value: true
-        intent: publisher_filter_positive
-        not_intent: 
+        intent: 
           - positive
           - genre_filter_positive
         conditions:
           - active_loop: detailed_recommendation_form
-          - requested_slot: publisher_filter
+            requested_slot: genre_filter
       - type: from_intent
         value: false
-        intent: publisher_filter_negative
-        not_intent: 
+        intent: 
           - negative
           - genre_filter_negative
         conditions:
           - active_loop: detailed_recommendation_form
-          - requested_slot: publisher_filter
+            requested_slot: genre_filter
+
+  publisher_filter:
+    type: bool
+    influence_conversation: True
+    mappings:
+      - type: from_intent
+        value: true
+        intent: 
+          - positive
+          - publisher_filter_positive
+        conditions:
+          - active_loop: detailed_recommendation_form
+            requested_slot: publisher_filter
+      - type: from_intent
+        value: false
+        intent: 
+          - negative
+          - publisher_filter_negative
+        conditions:
+          - active_loop: detailed_recommendation_form
+            requested_slot: publisher_filter
 
   genre:
     type: text
@@ -150,28 +146,28 @@ responses:
     - text: "❌ You can't start a form in another form!"
 
   utter_ask_genre_filter:
-    - text: "🎮 Do you want to filter by genre?"
-    - text: "🔍 Shall I filter the results by genre for you?"
-    - text: "⚙️ Should I apply a filter for genres?"
-    - text: "🎯 Do you prefer to filter by a specific genre?"
+    - text: "🎮 Sure! Would you like to filter the recommendations by genre?"
+    - text: "🔍 Of course! Should I sort the results based on genre?"
+    - text: "⚙️ Absolutely! Do you want me to apply a genre filter for this recommendation?"
+    - text: "🎯 Great! Do you prefer filtering the recommendations by a specific genre?"
 
   utter_ask_genre:
-    - text: "🎮 What type of games are you interested in?"
-    - text: "🤔 Can you tell me which genres of games you like?"
-    - text: "💡 What are your favorite types of games?"
-    - text: "🎯 Are there any specific genres or themes you prefer when playing games?"
+    - text: "🎮 What types of games do you enjoy the most?"
+    - text: "🤔 What game genres do you prefer?"
+    - text: "💡 What are your favorite game genres?"
+    - text: "🎯 Are there any specific genres or themes you particularly like in games?"
 
   utter_ask_publisher_filter:
-    - text: "🏢 Do you want to filter by publisher?"
-    - text: "🔍 Shall I filter the results by publisher for you?"
-    - text: "⚙️ Should I apply a filter for a publisher?"
-    - text: "🎯 Do you prefer to filter by a specific publisher?"
+    - text: "🏢 Would you like to filter the recommendations by a specific publisher?"
+    - text: "🔍 Should I apply a publisher filter to the recommendations?"
+    - text: "⚙️ Would you like to set a publisher filter for the recommendations?"
+    - text: "🎯 Do you want to filter the recommendations by a particular publisher?"
 
   utter_ask_publisher:
-    - text: "🏢 What game publishers do you prefer?"
-    - text: "🤔 Can you tell me which game publishers you like?"
-    - text: "💡 What are your favorite publishers?"
-    - text: "🎯 Are there any specific publishers or studios you prefer when playing games?"
+    - text: "🏢 Is there a game publisher you prefer?"
+    - text: "🤔 Which game publisher do you like?"
+    - text: "💡 Do you have a favorite publisher?"
+    - text: "🎯 Is there a specific publisher or studio you prefer in games?"
 
   utter_iamabot:
     - text: "👋 Hi, I'm Rolo, a bot made to help you find the perfect games for your gaming experience!"
