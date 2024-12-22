@@ -172,6 +172,24 @@ nlu:
     - I prefer filtering by genre
     - Let's filter by genre
     - Genre-based filtering sounds good
+    - Yes, I want to filter by [RPG](genre) genre
+    - Filter by [action](genre) genre, please
+    - I prefer [adventure](genre) games
+    - Can we filter by [horror](genre)?
+    - Let's try [strategy](genre) filtering
+    - I'd like to filter by [FPS](genre) genre
+    - Please filter by [platformer](genre)
+    - I'm in the mood for [simulation](genre) games, let's filter that
+    - Can you filter by [puzzle](genre) games?
+    - I want to see [racing](genre) games only
+    - Filter by [indie](genre) genre for me
+    - Let's go with [sandbox](genre) genre
+    - I prefer [co-op](genre) games; filter by that
+    - Can we do a [survival](genre) filter?
+    - Filter by [MMORPG](genre) games, please
+    - I'd like to see only [combat](genre) games
+    - Filter out [casual](genre) games
+    - Let’s look at only [sports](genre) games
 
 - intent: genre_filter_negative
   examples: |
@@ -196,6 +214,23 @@ nlu:
     - Publisher filtering works for me
     - Let's filter by publisher
     - Publisher-based filtering sounds good
+    - Yes, filter by [Electronic Arts](publisher)
+    - Please filter by [Nintendo](publisher)
+    - I want to filter by [Ubisoft](publisher)
+    - Let’s filter by [Square Enix](publisher)
+    - Can you filter by [Bethesda](publisher)?
+    - I prefer games from [Rockstar Games](publisher), filter that
+    - Filter by [Valve](publisher) games
+    - Let’s only see games from [Activision](publisher)
+    - Can we filter by [SEGA](publisher)?
+    - Filter by [Capcom](publisher) titles
+    - I'd like to see only [Insomniac Games](publisher)
+    - Show me only games from [CD Projekt Red](publisher)
+    - Can you filter by [Blizzard Entertainment, Inc.](publisher)?
+    - Let’s see games from [Bandai Namco](publisher)
+    - Filter by [Gameloft](publisher) games
+    - Show me games developed by [Treyarch](publisher)
+    - Let’s filter by [FromSoftware Inc.](publisher)
 
 - intent: publisher_filter_negative
   examples: |
