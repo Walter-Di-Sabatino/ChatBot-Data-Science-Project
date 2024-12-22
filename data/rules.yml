@@ -67,7 +67,7 @@ rules:
       - active_loop: detailed_recommendation_form
     steps:
       - intent: game_info
-      - action: utter_default
+      - action: utter_no_form_in_form
       - action: action_resume_form
 
   - rule: Handle interruption intents during forms (publisher games)
@@ -75,7 +75,7 @@ rules:
       - active_loop: detailed_recommendation_form
     steps:
       - intent: get_publisher_games
-      - action: utter_default
+      - action: utter_no_form_in_form
       - action: action_resume_form
 
   - rule: activate termination

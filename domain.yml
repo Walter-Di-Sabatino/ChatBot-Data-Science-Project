@@ -42,6 +42,7 @@ actions:
   - validate_detailed_recommendation_form
   - utter_ask_genre_filter
   - utter_ask_publisher_filter
+  - utter_no_form_in_form
 
 entities:
   - game
@@ -143,64 +144,67 @@ forms:
 responses:
 
   utter_default:
-    - text: "I'm not sure what you mean. Could you be more specific?"
+    - text: "🤔 I'm not sure what you mean. Could you be more specific?"
+
+  utter_no_form_in_form:
+    - text: "❌ You can't start a form in another form!"
 
   utter_ask_genre_filter:
-    - text: "Do you want to filter by genre?"
-    - text: "Shall I filter the results by genre for you?"
-    - text: "Should I apply a filter for genres?"
-    - text: "Do you prefer to filter by a specific genre?"
+    - text: "🎮 Do you want to filter by genre?"
+    - text: "🔍 Shall I filter the results by genre for you?"
+    - text: "⚙️ Should I apply a filter for genres?"
+    - text: "🎯 Do you prefer to filter by a specific genre?"
 
   utter_ask_genre:
-    - text: "What type of games are you interested in?"
-    - text: "Can you tell me which genres of games you like?"
-    - text: "What are your favorite types of games?"
-    - text: "Are there any specific genres or themes you prefer when playing games?"
+    - text: "🎮 What type of games are you interested in?"
+    - text: "🤔 Can you tell me which genres of games you like?"
+    - text: "💡 What are your favorite types of games?"
+    - text: "🎯 Are there any specific genres or themes you prefer when playing games?"
 
   utter_ask_publisher_filter:
-    - text: "Do you want to filter by publisher?"
-    - text: "Shall I filter the results by publisher for you?"
-    - text: "Should I apply a filter for a publisher?"
-    - text: "Do you prefer to filter by a specific publisher?"
+    - text: "🏢 Do you want to filter by publisher?"
+    - text: "🔍 Shall I filter the results by publisher for you?"
+    - text: "⚙️ Should I apply a filter for a publisher?"
+    - text: "🎯 Do you prefer to filter by a specific publisher?"
 
   utter_ask_publisher:
-    - text: "What game publishers do you prefer?"
-    - text: "Can you tell me which game publishers you like?"
-    - text: "What are your favorite publishers?"
-    - text: "Are there any specific publishers or studios you prefer when playing games?"
+    - text: "🏢 What game publishers do you prefer?"
+    - text: "🤔 Can you tell me which game publishers you like?"
+    - text: "💡 What are your favorite publishers?"
+    - text: "🎯 Are there any specific publishers or studios you prefer when playing games?"
 
   utter_iamabot:
-    - text: "Hi, I'm Rolo, a bot made to help you find the perfect games for your gaming experience!"
+    - text: "👋 Hi, I'm Rolo, a bot made to help you find the perfect games for your gaming experience!"
 
   utter_cheer_up:
-    - text: "Here is something to cheer you up:"
+    - text: "Here is something to cheer you up: 😊"
       image: "https://i.imgur.com/nGF1K8f.jpg"
 
   utter_did_that_help:
-    - text: "Did that help you?"
-    - text: "Was that useful?"
-    - text: "Do you need any more assistance?"
+    - text: "🤔 Did that help you?"
+    - text: "👍 Was that useful?"
+    - text: "💬 Do you need any more assistance?"
 
   utter_happy:
-    - text: "Great, carry on!"
-    - text: "Awesome, keep going!"
-    - text: "Glad to hear that!"
+    - text: "🎉 Great, carry on!"
+    - text: "🚀 Awesome, keep going!"
+    - text: "😊 Glad to hear that!"
 
   utter_ask_continue:
-    - text: "Are you sure you want to exit the form?"
+    - text: "⚠️ Are you sure you want to exit the form?"
 
   utter_goodbye:
-    - text: "Bye"
-    - text: "Goodbye, take care!"
-    - text: "See you later!"
+    - text: "👋 Bye!"
+    - text: "💖 Goodbye, take care!"
+    - text: "👋 See you later!"
 
   utter_greet:
-    - text: "Hi! How are you?"
-    - text: "Hello! How's it going?"
-    - text: "Hey there! What's up?"
-  
+    - text: "😊 Hi! How are you?"
+    - text: "👋 Hello! How's it going?"
+    - text: "🎉 Hey there! What's up?"
+
   utter_terminate_form:
-    - text: "Form closed. Let me know if you need more help"
+    - text: "🛑 Form closed. Let me know if you need more help."
 
 session_config:
   session_expiration_time: 60

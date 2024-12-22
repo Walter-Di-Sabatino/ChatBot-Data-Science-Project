@@ -25,7 +25,7 @@ stories:
       - intent: goodbye
       - action: utter_goodbye
 
-  - story: get some recommendations
+  - story: manage forms
     steps:
       - intent: start
       - action: utter_iamabot
@@ -37,19 +37,19 @@ stories:
       - slot_was_set:
           - genre_filter: True
       - intent: game_info
-      - action: utter_default
+      - action: utter_no_form_in_form
       - action: action_resume_form
       - slot_was_set:
           - requested_slot: genre
       - intent: game_info
-      - action: utter_default
+      - action: utter_no_form_in_form
       - action: action_resume_form
       - slot_was_set:
           - requested_slot: publisher_filter
       - slot_was_set:
           - publisher_filter: True
       - intent: get_publisher_games
-      - action: utter_default
+      - action: utter_no_form_in_form
       - action: action_resume_form
       - slot_was_set:
           - requested_slot: publisher
