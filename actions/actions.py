@@ -257,29 +257,46 @@ class ActionProvideRecommendation(Action):
 
         if not genre and not publisher and not genre_filter and not publisher_filter:
             games = get_top_games(session, limit=1000)
-            games = random.sample(games, 5)
+
+            if len(games) >= 5:
+                games = random.sample(games, 5)
+            else:
+                games = games
+
             positive_response = "🎮 Here are 5 games across all genres and publishers."
             negative_response = "🚫 Sorry, I couldn't retrieve the top games right now."
 
         elif genre and publisher and genre_filter and publisher_filter:
             games = get_top_games_by_publisher_and_tag(session, publisher, genre, limit = 100)
-            games = random.sample(games, 5)
-            positive_response = f"💡 Here are 5 of our recommendations based on the {genre} and {publisher} combination:"
+
+            if len(games) >= 5:
+                games = random.sample(games, 5)
+            else:
+                games = games
+
+            positive_response = f"💡 Here are {len(games)} of our recommendations based on the {genre} and {publisher} combination:"
             negative_response = f"🚫 Sorry, I couldn't find any games for the {genre} and {publisher} combination."
 
         elif not genre and publisher and not genre_filter and publisher_filter:
             games = get_top_games_by_publisher(session, publisher, limit=100)
-            games = random.sample(games, 5)
 
-            logger.info(f"Tracker: {games[0].name}")
+            if len(games) >= 5:
+                games = random.sample(games, 5)
+            else:
+                games = games
 
-            positive_response = f"📝 Here are 5 games published by {publisher}:"
+            positive_response = f"📝 Here are {len(games)} games published by {publisher}:"
             negative_response = f"🚫 Sorry, I couldn't find any games published by {publisher}."
 
         elif genre and not publisher and genre_filter and not publisher_filter:
             games = get_top_games_by_tag(session, genre, limit= 500)
-            games = random.sample(games, 5)
-            positive_response = f"🎮 Here are 5 games in the {genre} genre:"
+
+            if len(games) >= 5:
+                games = random.sample(games, 5)
+            else:
+                games = games
+
+            positive_response = f"🎮 Here are {len(games)} games in the {genre} genre:"
             negative_response = f"🚫 Sorry, I couldn't find any games in the {genre} genre."
 
         else:
@@ -338,7 +355,7 @@ class ValidateDetailedRecommendationForm(FormValidationAction):
 
         logger.info(f"Tracker: yolo2")
 
-        if not tracker.get_slot('genre_filter'):
+        if not tracker.get_slot('genre_filter')  and tracker.get_slot('genre') == "NO":
             return {"genre": "NO"}
 
         session = get_session()
@@ -351,7 +368,7 @@ class ValidateDetailedRecommendationForm(FormValidationAction):
             # Convertiamo e verifichiamo se il valore è valido
             normalized_value = slot_value.strip().lower()
             if normalized_value in genres:
-                return {'genre': slot_value.strip()}
+                return {'genre': slot_value.strip(), "genre_filter": True}
         # Se il valore non è valido, inviamo un messaggio di errore
         dispatcher.utter_message(text="🚫 Sorry, that's not a valid genre. Please try again.")
         return {'genre': None}
@@ -384,7 +401,7 @@ class ValidateDetailedRecommendationForm(FormValidationAction):
 
         logger.info(f"Tracker: yolo4")
 
-        if not tracker.get_slot('publisher_filter'):
+        if not tracker.get_slot('publisher_filter') and tracker.get_slot('publisher') == "NO":
             return {"publisher": "NO"}
 
         session = get_session()
@@ -398,7 +415,7 @@ class ValidateDetailedRecommendationForm(FormValidationAction):
             normalized_value = slot_value.strip().lower()
             if normalized_value in publishers:
                 logger.info(f"Tracker: {slot_value.strip()}")
-                return {'publisher': slot_value.strip()}
+                return {'publisher': slot_value.strip(), "publisher_filter": True}
         # Se il valore non è valido, inviamo un messaggio di errore
         dispatcher.utter_message(text="🚫 Sorry, that's not a valid publisher. Please try again.")
         return {'publisher': None}

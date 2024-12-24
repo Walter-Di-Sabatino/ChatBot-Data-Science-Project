@@ -50,6 +50,28 @@ nlu:
     - I'd like to discover a new game, any ideas?
     - Can you suggest some universally liked games?
     - What games are really worth playing?
+    - Can you recommend me some games by [Electronic Arts](publisher)?
+    - Do you have any good [action](genre) game suggestions?
+    - I'm looking for something new to play, any games by [Nintendo](publisher)?
+    - What [adventure](genre) games would you recommend?
+    - What are some interesting games right now by [Bethesda](publisher)?
+    - I want to start a new [shooter](genre), what do you suggest?
+    - Do you know any games worth trying from [Ubisoft](publisher)?
+    - Are there any must-play [RPG](genre) games you can think of?
+    - Can you give me some suggestions for games to try by [Square Enix](publisher)?
+    - I'd love something fun to play, any recommendations for [platformer](genre) games?
+    - What would you suggest for passing the time by [Activision](publisher)?
+    - Which games are popular these days in the [sports](genre) genre?
+    - I'd like to discover a new game, any ideas by [Capcom](publisher)?
+    - Can you suggest some universally liked [horror](genre) games?
+    - What games are really worth playing from [Insomniac Games](publisher)?
+    - Can you recommend some [RPG](genre) games by [Bandai Namco](publisher)?
+    - Suggest [action](genre) games by [CD Projekt Red](publisher).
+    - What games can you suggest for someone who enjoys [strategy](genre) by [Valve](publisher)?
+    - What games would you recommend for a fan of [horror](genre) games by [Treyarch](publisher)?
+    - Suggest some [sports](genre) games by [Gameloft](publisher).
+    - Can you give me suggestions for [shooter](genre) games from [FromSoftware Inc.](publisher)?
+    - What games do you have for someone who likes [racing](genre) games from [Bethesda](publisher)?
 
 - intent: get_publisher_games
   examples: |

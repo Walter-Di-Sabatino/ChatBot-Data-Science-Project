@@ -50,11 +50,11 @@ rules:
     condition:
       - active_loop: detailed_recommendation_form
       - slot_was_set:
-          - requested_slot: genre_filter
+          - genre_filter
       - slot_was_set:
           - genre
       - slot_was_set:
-          - requested_slot: publisher_filter
+          - publisher_filter
       - slot_was_set:
           - publisher
     steps:

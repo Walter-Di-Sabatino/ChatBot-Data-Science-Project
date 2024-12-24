@@ -7,18 +7,40 @@ intents:
   - mood_great
   - mood_unhappy
   - bot_challenge
-  - game_info
-  - get_recommendation
-  - ask_recommendation
+
   - get_publishers
   - get_genres
   - terminate
-  - get_publisher_games
   - positive
   - negative
-  - genre_filter_positive
+
+  - game_info:
+      use_entities:
+        - game
+
+  - get_recommendation:
+      use_entities:
+        - genre
+
+  - ask_recommendation:
+      use_entities:
+        - genre
+        - publisher
+
+  - get_publisher_games:
+      use_entities:
+        - publisher
+
+  - genre_filter_positive:
+      use_entities:
+        - genre
+
   - genre_filter_negative
-  - publisher_filter_positive
+
+  - publisher_filter_positive:
+      use_entities:
+        - publisher
+
   - publisher_filter_negative
 
 actions:
@@ -103,6 +125,10 @@ slots:
             requested_slot: genre
           - active_loop: detailed_recommendation_form
             requested_slot: genre_filter
+      - type: from_entity
+        entity: genre
+        value: "NO"
+        intent: ask_recommendation
 
   publisher:
     type: text
@@ -116,6 +142,10 @@ slots:
           - active_loop: detailed_recommendation_form
             requested_slot: publisher_filter
           - active_loop: get_publisher_games_form
+      - type: from_entity
+        entity: publisher
+        value: "NO"
+        intent: ask_recommendation
 
   game:
     type: text
@@ -151,10 +181,10 @@ responses:
     - text: "❌ You can't start a form in another form!"
 
   utter_ask_genre_filter:
-    - text: "🎮 Sure! Would you like to filter the recommendations by genre?"
-    - text: "🔍 Of course! Should I sort the results based on genre?"
-    - text: "⚙️ Absolutely! Do you want me to apply a genre filter for this recommendation?"
-    - text: "🎯 Great! Do you prefer filtering the recommendations by a specific genre?"
+    - text: "🎮 Would you like to filter the recommendations by genre?"
+    - text: "🔍 Should I sort the results based on genre?"
+    - text: "⚙️ Do you want me to apply a genre filter for this recommendation?"
+    - text: "🎯 Do you prefer filtering the recommendations by a specific genre?"
 
   utter_ask_genre:
     - text: "🎮 What types of games do you enjoy the most?"
