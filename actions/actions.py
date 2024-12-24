@@ -253,6 +253,8 @@ class ActionProvideRecommendation(Action):
         negative_response = ""
         positive_response = ""
 
+        games = None
+
         if not genre and not publisher and not genre_filter and not publisher_filter:
             games = get_top_games(session, limit=1000)
             games = random.sample(games, 5)
@@ -279,6 +281,9 @@ class ActionProvideRecommendation(Action):
             games = random.sample(games, 5)
             positive_response = f"🎮 Here are 5 games in the {genre} genre:"
             negative_response = f"🚫 Sorry, I couldn't find any games in the {genre} genre."
+
+        else:
+            negative_response = "🚫 Sorry, I couldn't process your request. Please try specifying different criteria or check your input."
 
 
         if not games:

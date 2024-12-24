@@ -99,6 +99,11 @@ slots:
     mappings:
       - type: from_entity
         entity: genre
+        conditions:
+          - active_loop: detailed_recommendation_form
+            requested_slot: genre
+          - active_loop: detailed_recommendation_form
+            requested_slot: genre_filter
 
   publisher:
     type: text
@@ -106,6 +111,12 @@ slots:
     mappings:
       - type: from_entity
         entity: publisher
+        conditions:
+          - active_loop: detailed_recommendation_form
+            requested_slot: publisher
+          - active_loop: detailed_recommendation_form
+            requested_slot: publisher_filter
+          - active_loop: get_publisher_games_form
 
   language:
     type: text
@@ -120,6 +131,8 @@ slots:
     mappings:
       - type: from_entity
         entity: game
+        conditions:
+          - active_loop: game_info_form
 
 forms:
   detailed_recommendation_form:
