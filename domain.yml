@@ -47,7 +47,6 @@ actions:
 entities:
   - game
   - genre
-  - language
   - publisher
 
 slots:
@@ -117,13 +116,6 @@ slots:
           - active_loop: detailed_recommendation_form
             requested_slot: publisher_filter
           - active_loop: get_publisher_games_form
-
-  language:
-    type: text
-    influence_conversation: true
-    mappings:
-      - type: from_entity
-        entity: language
 
   game:
     type: text
