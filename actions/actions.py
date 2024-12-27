@@ -323,6 +323,7 @@ class ActionResumeForm(Action):
         # Riattiva il ciclo della form senza resettare gli slot
         dispatcher.utter_message(text="🔄 Alright, let's pick up where we left off! 😊")
         return [ActiveLoop("detailed_recommendation_form")]
+    
 class ValidateDetailedRecommendationForm(FormValidationAction):
     def name(self) -> Text:
         return "validate_detailed_recommendation_form"
