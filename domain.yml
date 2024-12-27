@@ -65,6 +65,7 @@ actions:
   - utter_ask_genre_filter
   - utter_ask_publisher_filter
   - utter_no_form_in_form
+  - action_re_ask_slot
 
 entities:
   - game
