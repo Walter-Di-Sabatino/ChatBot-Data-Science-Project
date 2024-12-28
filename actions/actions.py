@@ -83,8 +83,8 @@ def get_games_for_publishers_and_tags(games, publisher_names, genres_names, disp
     games_by_publisher = defaultdict(list)
     games_by_tag = defaultdict(list)
 
-    publisher_names = [nome.strip().lower() for nome in publisher_names]
-    genres_names = [nome.strip().lower() for nome in genres_names]
+    if use_publishers: publisher_names = [nome.strip().lower() for nome in publisher_names]
+    if use_tags: genres_names = [nome.strip().lower() for nome in genres_names]
 
     if use_publishers or use_tags:
         for game in games:
