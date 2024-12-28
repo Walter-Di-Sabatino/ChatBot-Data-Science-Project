@@ -111,7 +111,7 @@ def get_games_for_publishers_and_tags(games, publisher_names, genres_names, disp
                 selected_games.add(random.choice(games_list))
         
         if publishers_not_found:
-            dispatcher.utter_message(f"No games available for the recommendations for the publisher: {format_names_list(publishers_not_found, 'and' )} 😕")
+            dispatcher.utter_message(f"😕 No games available for the recommendations for the publisher: {format_names_list(publishers_not_found, 'and' )}")
 
     if use_tags:
 
@@ -125,7 +125,7 @@ def get_games_for_publishers_and_tags(games, publisher_names, genres_names, disp
                 selected_games.add(random.choice(games_list))
 
         if genres_not_found:
-            dispatcher.utter_message(f"No games available for the recommendations for the genre: {format_names_list(genres_not_found, 'and' )} 😕")
+            dispatcher.utter_message(f"😕 No games available for the recommendations for the genre: {format_names_list(genres_not_found, 'and' )}")
 
     # Seleziona giochi aggiuntivi se il numero di giochi selezionati è inferiore al limite
     remaining_games = [game for game in games if game not in selected_games]
@@ -146,12 +146,12 @@ def game_info_response(game):
     
     # Recupero dei dettagli aggiuntivi
     price = f"${game.price:.2f}" if game.price else "Price not available"
-    short_description = game.short_description if game.short_description else "No description available."
+    short_description = game.short_description if game.short_description else "No description available"
     required_age = game.required_age if game.required_age else "Not available"
     estimated_owners = game.estimated_owners if game.estimated_owners else "Not available"
-    reviews = game.reviews if game.reviews else "No reviews available."
-    metacritic_score = f"Metacritic score: {game.metacritic_score}" if game.metacritic_score else "No Metacritic score available."
-    supported_languages = ', '.join([language.name for language in game.supported_languages]) if game.supported_languages else "No supported languages listed."
+    reviews = game.reviews if game.reviews else "No reviews available"
+    metacritic_score = f"Metacritic score: {game.metacritic_score}" if game.metacritic_score else "No Metacritic score available"
+    supported_languages = ', '.join([language.name for language in game.supported_languages]) if game.supported_languages else "No supported languages listed"
     
     # Recupero del supporto per i sistemi operativi
     os_support = []
@@ -166,11 +166,11 @@ def game_info_response(game):
     
     # Formattazione della risposta con informazioni aggiuntive
     response = (
-        f"🎮 {game.name} was released on {release_date} by {pub_names}.\n"
-        f"💰 It costs {price} and was developed by {dev_names}.\n"
+        f"🎮 {game.name} was released on {release_date} by {pub_names}\n"
+        f"💰 It costs {price} and was developed by {dev_names}\n"
         f"🔞 Required Age: {required_age}.\n"
         f"📝 Description: {short_description}\n"
-        f"👥 Estimated owners: {estimated_owners}.\n"
+        f"👥 Estimated owners: {estimated_owners}\n"
         f"⭐ Reviews: {reviews}\n"
         f"🎯 {metacritic_score}\n"
         f"🌐 Languages supported: {supported_languages}\n"
@@ -215,7 +215,7 @@ class ActionProvideGameInfo(Action):
         
         original_game = tracker.get_slot("game")
         if not original_game:
-            dispatcher.utter_message(text="❓ I need the name of the game to provide details.")
+            dispatcher.utter_message(text="❓ I need the name of the game to provide details")
             return [SlotSet("game", None)]
         
         session = get_session()
@@ -225,7 +225,7 @@ class ActionProvideGameInfo(Action):
         if game:
             game_info_response_dispatched(dispatcher, game)
         else:
-            dispatcher.utter_message(text=f"🚫 Sorry, I couldn't retrieve details for the game '{original_game}'.")
+            dispatcher.utter_message(text=f"🚫 Sorry, I couldn't retrieve details for the game '{original_game}'")
         
         session.close()
         return [SlotSet("game", None)]
@@ -241,7 +241,7 @@ class ActionProvidePublisherGames(Action):
         original_publisher = tracker.get_slot("publishers")[0]
 
         if not original_publisher:
-            dispatcher.utter_message(text="❓ I need the name of the publishers to provide details.")
+            dispatcher.utter_message(text="❓ I need the name of the publishers to provide details")
             return [SlotSet("publishers", None)]
         
         session = get_session()
@@ -251,7 +251,7 @@ class ActionProvidePublisherGames(Action):
         verb = format_plural_verb(len(games))
 
         if not games:
-            dispatcher.utter_message(text=f"🚫 Sorry, I couldn't find any games for the publisher {original_publisher}.")
+            dispatcher.utter_message(text=f"🚫 Sorry, I couldn't find any games for the publisher {original_publisher}")
         else:
             dispatcher.utter_message(text=f"💡 Here {verb} {len(games)} of our recommendations based on the publisher {original_publisher}:")
 
