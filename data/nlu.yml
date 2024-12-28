@@ -52,7 +52,7 @@ nlu:
     - What games are really worth playing?
     - Can you recommend me some games by [Electronic Arts](publisher)?
     - Do you have any good [action](genre) game suggestions?
-    - I'm looking for something new to play, any games by [Nintendo](publisher)?
+    - I'm looking for something new to play, any games by [505 Games](publisher)?
     - What [adventure](genre) games would you recommend?
     - What are some interesting games right now by [Bethesda](publisher)?
     - I want to start a new [shooter](genre), what do you suggest?
@@ -72,11 +72,25 @@ nlu:
     - Suggest some [sports](genre) games by [Gameloft](publisher).
     - Can you give me suggestions for [shooter](genre) games from [FromSoftware Inc.](publisher)?
     - What games do you have for someone who likes [racing](genre) games from [Bethesda](publisher)?
+    - Can you recommend me some [action](genre) or [RPG](genre) games by [Square Enix](publisher) and [Bethesda](publisher)?
+    - Do you have any good [horror](genre) and [platformer](genre) game suggestions from [Capcom](publisher) and [505 Games](publisher)?
+    - I'm looking for something new to play, any [strategy](genre) or [simulation](genre) games by [Paradox Interactive](publisher) and [Valve](publisher)?
+    - What [sports](genre) or [racing](genre) games would you recommend by [Electronic Arts](publisher) and [Activision](publisher)?
+    - What are some interesting [platformer](genre) or [adventure](genre) games from [505 Games](publisher) and [Ubisoft](publisher) right now?
+    - I want to start a new [shooter](genre) or [RPG](genre), what do you suggest from [Ubisoft](publisher) and [Bethesda](publisher)?
+    - Do you know any [adventure](genre) or [action](genre) games worth trying from [Rockstar Games](publisher) and [Insomniac Games](publisher)?
+    - Are there any must-play [shooter](genre) or [strategy](genre) games by [Valve](publisher) and [Treyarch](publisher)?
+    - Can you give me some suggestions for [RPG](genre) or [horror](genre) games by [FromSoftware Inc.](publisher) and [Bandai Namco](publisher)?
+    - I'd love something fun to play, any recommendations for [platformer](genre) or [adventure](genre) games by [Insomniac Games](publisher) and [Capcom](publisher)?
+    - What would you suggest for passing the time with [simulation](genre) or [puzzle](genre) games by [Bethesda](publisher) and [Valve](publisher)?
+    - Which games are popular these days in the [shooter](genre) or [action](genre) genres from [Activision](publisher) and [Electronic Arts](publisher)?
+    - I'd like to discover a new [RPG](genre) or [strategy](genre) game, any ideas by [Bandai Namco](publisher) and [Square Enix](publisher)?
+    - Can you suggest some universally liked [horror](genre) or [shooter](genre) games by [Treyarch](publisher) and [Capcom](publisher)?
 
 - intent: get_publisher_games
   examples: |
     - show me games from [Electronic Arts](publisher)
-    - what games were developed by [Nintendo](publisher)?
+    - what games were developed by [505 Games](publisher)?
     - list the titles from [Ubisoft](publisher)
     - show me all games by [Square Enix](publisher)
     - can you list games made by [Bethesda](publisher)?
@@ -184,7 +198,7 @@ nlu:
     - that doesn't sound good
     - incorrect
 
-- intent: genre_filter_positive
+- intent: genres_filter_positive
   examples: |
     - yes genre
     - Yes, I want to filter by genre
@@ -212,8 +226,22 @@ nlu:
     - I'd like to see only [combat](genre) games
     - Filter out [casual](genre) games
     - Let’s look at only [sports](genre) games
+    - Yes, I want to filter by [RPG](genre) and [action](genre) genres
+    - Please filter by [strategy](genre) and [adventure](genre) games
+    - Let’s filter by [FPS](genre) and [platformer](genre) games
+    - I prefer to see [indie](genre) and [simulation](genre) games
+    - Filter by [horror](genre) and [puzzle](genre) genres, please
+    - I want to filter by both [combat](genre) and [racing](genre) games
+    - Let’s check out [sandbox](genre) and [MMORPG](genre) games
+    - Please filter by [co-op](genre) and [survival](genre) genres
+    - I’d like to see [sports](genre) and [casual](genre) games only
+    - Can we filter by [action](genre), [adventure](genre), and [RPG](genre)?
+    - I’d like a filter for [strategy](genre) and [indie](genre) games
+    - Let’s try filtering by both [FPS](genre) and [combat](genre) games
+    - Please show me [platformer](genre) and [racing](genre) games only
+    - I prefer [simulation](genre) and [sandbox](genre) genres
 
-- intent: genre_filter_negative
+- intent: genres_filter_negative
   examples: |
     - No genre
     - No, I don't want to filter by genre
@@ -226,7 +254,7 @@ nlu:
     - Don't filter by genre
     - No specific genre needed
 
-- intent: publisher_filter_positive
+- intent: publishers_filter_positive
   examples: |
     - Yes publisher
     - Yes, I want to filter by publisher
@@ -237,7 +265,7 @@ nlu:
     - Let's filter by publisher
     - Publisher-based filtering sounds good
     - Yes, filter by [Electronic Arts](publisher)
-    - Please filter by [Nintendo](publisher)
+    - Please filter by [505 Games](publisher)
     - I want to filter by [Ubisoft](publisher)
     - Let’s filter by [Square Enix](publisher)
     - Can you filter by [Bethesda](publisher)?
@@ -253,8 +281,23 @@ nlu:
     - Filter by [Gameloft](publisher) games
     - Show me games developed by [Treyarch](publisher)
     - Let’s filter by [FromSoftware Inc.](publisher)
+    - Yes, I want to filter by [Electronic Arts](publisher) and [505 Games](publisher)
+    - Please filter by [Ubisoft](publisher) and [Square Enix](publisher)
+    - Let’s filter by [Bethesda](publisher) and [Rockstar Games](publisher)
+    - I prefer games from [Valve](publisher) and [Activision](publisher), filter that
+    - Can we filter by [SEGA](publisher) and [Capcom](publisher)?
+    - Filter by [Insomniac Games](publisher) and [CD Projekt Red](publisher) titles
+    - I’d like to see games from [Blizzard Entertainment, Inc.](publisher) and [Bandai Namco](publisher)
+    - Show me games from [Gameloft](publisher) and [Treyarch](publisher)
+    - Let’s only see games from [FromSoftware Inc.](publisher) and [Valve](publisher)
+    - Filter by [Electronic Arts](publisher) and [Ubisoft](publisher) games
+    - Can we filter by [Activision](publisher) and [Square Enix](publisher)?
+    - Please show me games developed by [Rockstar Games](publisher) and [Bethesda](publisher)
+    - Let’s try filtering by [CD Projekt Red](publisher) and [Blizzard Entertainment, Inc.](publisher)
+    - Show me games from [Capcom](publisher) and [505 Games](publisher)
+    - I’d like to filter by [SEGA](publisher) and [Insomniac Games](publisher)
 
-- intent: publisher_filter_negative
+- intent: publishers_filter_negative
   examples: |
     - No publisher
     - No, I don't want to filter by publisher

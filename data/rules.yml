@@ -15,7 +15,7 @@ rules:
       - action: action_provide_game_info
       - action: action_reset_slots
 
-  - rule: get publisher games
+  - rule: get publishers games
     condition:
       - active_loop: null 
     steps:
@@ -23,7 +23,7 @@ rules:
       - action: get_publisher_games_form
       - active_loop: get_publisher_games_form
       - slot_was_set:
-          - requested_slot: publisher
+          - requested_slot: publishers
       - slot_was_set:
           - requested_slot: null
       - active_loop: null
@@ -50,13 +50,13 @@ rules:
     condition:
       - active_loop: detailed_recommendation_form
       - slot_was_set:
-          - genre_filter
+          - genres_filter
       - slot_was_set:
-          - genre
+          - genres
       - slot_was_set:
-          - publisher_filter
+          - publishers_filter
       - slot_was_set:
-          - publisher
+          - publishers
     steps:
       - active_loop: null
       - action: action_provide_recommendation
@@ -70,7 +70,7 @@ rules:
       - action: utter_no_form_in_form
       - action: action_resume_form
 
-  - rule: Handle interruption intents during forms (publisher games)
+  - rule: Handle interruption intents during forms (publishers games)
     condition:
       - active_loop: detailed_recommendation_form
     steps:

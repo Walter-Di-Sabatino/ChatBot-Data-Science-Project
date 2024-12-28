@@ -1,3 +1,4 @@
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 from database.models import *
 from sqlalchemy import func, case
@@ -40,43 +41,24 @@ def get_top_games(session, limit=5):
 
     return query.order_by(score_expr.desc()).limit(limit).all()
 
-def get_top_games_by_tag(session, tag_name, limit=5):
+def get_top_games_filtered(session, publisher_names=None, tag_names=None, limit=5):
     score_expr = (
         (func.coalesce(Game.positive, 0) / func.coalesce(Game.positive + Game.negative, 1))
         * func.log(func.coalesce(Game.positive - Game.negative, 0) + 1)
     )
 
-    query = session.query(Game).join(Game.tags)
+    query = session.query(Game)
 
-    if tag_name:
-        query = query.filter(Tag.name.ilike(tag_name))
+    # Aggiungi il join con Publisher se ci sono publisher_names
+    if publisher_names:
+        query = query.join(Game.publishers).filter(
+            or_(*[Publisher.name.ilike(publisher_name) for publisher_name in publisher_names])
+        )
 
-    return query.order_by(score_expr.desc()).limit(limit).all()
-
-def get_top_games_by_publisher(session, publisher_name, limit=5):
-    score_expr = (
-        (func.coalesce(Game.positive, 0) / func.coalesce(Game.positive + Game.negative, 1))
-        * func.log(func.coalesce(Game.positive - Game.negative, 0) + 1)
-    )
-
-
-    query = session.query(Game).join(Game.publishers)
-    if publisher_name:
-        query = query.filter(Publisher.name.ilike(publisher_name))
-
-    return query.order_by(score_expr.desc()).limit(limit).all()
-
-def get_top_games_by_publisher_and_tag(session, publisher_name, tag_name, limit=5):
-    score_expr = (
-        (func.coalesce(Game.positive, 0) / func.coalesce(Game.positive + Game.negative, 1))
-        * func.log(func.coalesce(Game.positive - Game.negative, 0) + 1)
-    )
-
-    query = session.query(Game).join(Game.publishers).join(Game.tags)
-
-    if publisher_name:
-        query = query.filter(Publisher.name.ilike(publisher_name))
-    if tag_name:
-        query = query.filter(Tag.name.ilike(tag_name))
+    # Aggiungi il join con Tag se ci sono tag_names
+    if tag_names:
+        query = query.join(Game.tags).filter(
+            or_(*[Tag.name.ilike(tag_name) for tag_name in tag_names])
+        )
 
     return query.order_by(score_expr.desc()).limit(limit).all()

@@ -60,6 +60,24 @@ def format_names(names):
 
     return all_names
 
+def format_names_list(names):
+
+    all_names = ", ".join([name for name in names])
+
+    if ", " in all_names:
+        all_names = all_names.rsplit(", ", 1)
+        all_names = " or ".join(all_names)
+
+    return all_names
+
+def format_plural(word, count):
+    """Return the plural form of a word if count is greater than 1."""
+    return f"{word}s" if count > 1 else word
+
+def format_plural_verb(count):
+    """Return the plural form of a word if count is greater than 1."""
+    return "are" if count > 1 else "is"
+
 def game_info_response(game):
     # Recupero dei nomi degli editori e degli sviluppatori
     pub_names = format_names(game.publishers)
@@ -162,25 +180,28 @@ class ActionProvidePublisherGames(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
         
-        original_publisher = tracker.get_slot("publisher")
+        original_publisher = tracker.get_slot("publishers")[0]
+
         if not original_publisher:
-            dispatcher.utter_message(text="❓ I need the name of the publisher to provide details.")
-            return [SlotSet("publisher", None)]
+            dispatcher.utter_message(text="❓ I need the name of the publishers to provide details.")
+            return [SlotSet("publishers", None)]
         
         session = get_session()
 
-        games = get_top_games_by_publisher(session, original_publisher)
+        games = get_top_games_filtered(session, publisher_names = [original_publisher])
+
+        verb = format_plural_verb(len(games))
 
         if not games:
             dispatcher.utter_message(text=f"🚫 Sorry, I couldn't find any games for the publisher {original_publisher}.")
         else:
-            dispatcher.utter_message(text=f"💡 Here are 5 of our recommendations based on the publisher {original_publisher}:")
+            dispatcher.utter_message(text=f"💡 Here {verb} {len(games)} of our recommendations based on the publisher {original_publisher}:")
 
             for game in games:
                 game_info_response_dispatched(dispatcher, game)
         
         session.close()
-        return [SlotSet("publisher", None)]
+        return [SlotSet("publishers", None)]
 
 class ActionProvideGenres(Action):
     def name(self) -> Text:
@@ -198,7 +219,7 @@ class ActionProvideGenres(Action):
         message = f"🎮 I have a total of {len(genres)} genres and subgenres available. These are the 10 most popular:\n\n"
 
         for i, (genre, game_count) in enumerate(genres[:10], 1):  # Prendi solo i primi 10
-            message += f"🔹 {i}. {genre.name} - {game_count} games in this genre\n"
+            message += f"🔹 {i}. {genre.name} - {game_count} games in this genres\n"
 
         dispatcher.utter_message(message)
         
@@ -215,13 +236,13 @@ class ActionProvidePublishers(Action):
         
         session = get_session()
 
-        # Ottieni i top publisher con il conteggio dei giochi
+        # Ottieni i top publishers con il conteggio dei giochi
         publishers = get_top_publishers(session)
         
         # Crea il messaggio da inviare
         message = f"🏢 I have {len(publishers)} publishers available. These are the 10 who have produced the most games:\n\n"
 
-        # Aggiungi i dettagli dei primi 10 publisher in una lista numerata
+        # Aggiungi i dettagli dei primi 10 publishers in una lista numerata
         for i, (publisher, game_count) in enumerate(publishers[:10], 1):  # Prendi solo i primi 10
             message += f"🔸 {i}. {publisher.name} - Games produced: {game_count}\n"
 
@@ -238,13 +259,16 @@ class ActionProvideRecommendation(Action):
             tracker: Tracker,
             domain: Dict[Text, Any]) -> List[Dict[Text, Any]]:
 
-        genre = tracker.get_slot("genre")
-        publisher = tracker.get_slot("publisher")
-        genre_filter = tracker.get_slot("genre_filter")
-        publisher_filter = tracker.get_slot("publisher_filter")
+        genres = tracker.get_slot("genres")
+        publishers = tracker.get_slot("publishers")
+        genres_filter = tracker.get_slot("genres_filter")
+        publishers_filter = tracker.get_slot("publishers_filter")
 
-        if genre == "NO": genre = False
-        if publisher == "NO": publisher = False
+        if genres == ["NO"]: genres = False
+        else: genre_label = format_plural("genre", len(genres))
+
+        if publishers == ["NO"]: publishers = False
+        else: publisher_label = format_plural("publisher", len(publishers))
 
         logger.info(f"Tracker: yolo")
 
@@ -255,7 +279,7 @@ class ActionProvideRecommendation(Action):
 
         games = None
 
-        if not genre and not publisher and not genre_filter and not publisher_filter:
+        if not genres and not publishers and not genres_filter and not publishers_filter:
             games = get_top_games(session, limit=1000)
 
             if len(games) >= 5:
@@ -266,38 +290,44 @@ class ActionProvideRecommendation(Action):
             positive_response = "🎮 Here are 5 games across all genres and publishers."
             negative_response = "🚫 Sorry, I couldn't retrieve the top games right now."
 
-        elif genre and publisher and genre_filter and publisher_filter:
-            games = get_top_games_by_publisher_and_tag(session, publisher, genre, limit = 100)
+        elif genres and publishers and genres_filter and publishers_filter:
+            games = get_top_games_filtered(session, publishers, genres, limit = 100)
 
             if len(games) >= 5:
                 games = random.sample(games, 5)
             else:
                 games = games
 
-            positive_response = f"💡 Here are {len(games)} of our recommendations based on the {genre} and {publisher} combination:"
-            negative_response = f"🚫 Sorry, I couldn't find any games for the {genre} and {publisher} combination."
+            verb = format_plural_verb(len(games))
 
-        elif not genre and publisher and not genre_filter and publisher_filter:
-            games = get_top_games_by_publisher(session, publisher, limit=100)
+            positive_response = f"💡 Here {verb} {len(games)} of our recommendations based on the {format_names_list(genres)} {genre_label} and {format_names_list(publishers)} {publisher_label}:"
+            negative_response = f"🚫 Sorry, I couldn't find any games for the {format_names_list(genres)} {genre_label} and {format_names_list(publishers)} {publisher_label} combination."
 
-            if len(games) >= 5:
-                games = random.sample(games, 5)
-            else:
-                games = games
-
-            positive_response = f"📝 Here are {len(games)} games published by {publisher}:"
-            negative_response = f"🚫 Sorry, I couldn't find any games published by {publisher}."
-
-        elif genre and not publisher and genre_filter and not publisher_filter:
-            games = get_top_games_by_tag(session, genre, limit= 500)
+        elif not genres and publishers and not genres_filter and publishers_filter:
+            games = get_top_games_filtered(session, publisher_names=publishers, limit=100)
 
             if len(games) >= 5:
                 games = random.sample(games, 5)
             else:
                 games = games
+            
+            verb = format_plural_verb(len(games))
 
-            positive_response = f"🎮 Here are {len(games)} games in the {genre} genre:"
-            negative_response = f"🚫 Sorry, I couldn't find any games in the {genre} genre."
+            positive_response = f"📝 Here {verb} {len(games)} games published by {format_names_list(publishers)}:"
+            negative_response = f"🚫 Sorry, I couldn't find any games published by {format_names_list(publishers)}."
+
+        elif genres and not publishers and genres_filter and not publishers_filter:
+            games = get_top_games_filtered(session, tag_names= genres, limit= 500)
+
+            if len(games) >= 5:
+                games = random.sample(games, 5)
+            else:
+                games = games
+            
+            verb = format_plural_verb(len(games))
+            
+            positive_response = f"🎮 Here {verb} {len(games)} games of the {format_names_list(genres)} {genre_label}:"
+            negative_response = f"🚫 Sorry, I couldn't find any games of the {format_names_list(genres)} {genre_label}."
 
         else:
             negative_response = "🚫 Sorry, I couldn't process your request. Please try specifying different criteria or check your input."
@@ -328,26 +358,26 @@ class ValidateDetailedRecommendationForm(FormValidationAction):
     def name(self) -> Text:
         return "validate_detailed_recommendation_form"
 
-    def validate_genre_filter(
+    def validate_genres_filter(
         self,
         value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
         domain: Dict[Text, Any]) -> Dict[Text, Any]:
 
-        slot_value = tracker.get_slot('genre_filter')
+        slot_value = tracker.get_slot('genres_filter')
         
         logger.info(f"Tracker: yolo1")
 
         if slot_value == False:
-            dispatcher.utter_message(text="🎮 Ok, I won't filter by genre. 👍")
-            return {"genre_filter": False, "genre": "NO"}
+            dispatcher.utter_message(text="🎮 Ok, I won't filter by genres. 👍")
+            return {"genres_filter": False, "genres": ["NO"]}
         elif slot_value == True:
-            return {"genre_filter": True}
+            return {"genres_filter": True}
         
-        return {"genre_filter": None}
+        return {"genres_filter": None}
 
-    def validate_genre(
+    def validate_genres(
         self,
         value: Any,
         dispatcher: CollectingDispatcher,
@@ -356,44 +386,56 @@ class ValidateDetailedRecommendationForm(FormValidationAction):
 
         logger.info(f"Tracker: yolo2")
 
-        if not tracker.get_slot('genre_filter')  and tracker.get_slot('genre') == "NO":
-            return {"genre": "NO"}
+        if not tracker.get_slot('genres_filter')  and tracker.get_slot('genres') == ["NO"]:
+            return {"genres": ["NO"]}
 
         session = get_session()
         genres = get_all_tag_names(session)
         genres = [genre[0].lower() for genre in genres]
 
-        slot_value = tracker.get_slot('genre')
+        slot_value = tracker.get_slot('genres')
+
+        logger.info(f"Tracker: {slot_value}")
 
         if slot_value:
-            # Convertiamo e verifichiamo se il valore è valido
-            normalized_value = slot_value.strip().lower()
-            if normalized_value in genres:
-                return {'genre': slot_value.strip(), "genre_filter": True}
+            slot_value = list(set(slot_value))
+            # Creiamo una lista per i generi validi
+            valid_genres = []
+            
+            for value in slot_value:
+                # Convertiamo e verifichiamo ogni valore
+                normalized_value = value.strip().lower()
+                if normalized_value in genres:
+                    logger.info(f"Tracker: {value.strip()}")
+                    valid_genres.append(value.strip())
+            
+            # Se abbiamo trovato generi validi, ritorniamo il risultato
+            if valid_genres:
+                return {'genres': valid_genres, "genres_filter": True}
         # Se il valore non è valido, inviamo un messaggio di errore
-        dispatcher.utter_message(text="🚫 Sorry, that's not a valid genre. Please try again.")
-        return {'genre': None}
+        dispatcher.utter_message(text="🚫 Sorry, that's not a valid genres. Please try again.")
+        return {'genres': None}
 
-    def validate_publisher_filter(
+    def validate_publishers_filter(
         self,
         value: Any,
         dispatcher: CollectingDispatcher,
         tracker: Tracker,
         domain: Dict[Text, Any]) -> Dict[Text, Any]:
 
-        slot_value = tracker.get_slot('publisher_filter')
+        slot_value = tracker.get_slot('publishers_filter')
 
         logger.info(f"Tracker: yolo3")
         
         if not slot_value:
-            dispatcher.utter_message(text="🏢 Ok, I won't filter by publisher. 👍")
-            return {"publisher_filter": False, "publisher": "NO"}
+            dispatcher.utter_message(text="🏢 Ok, I won't filter by publishers. 👍")
+            return {"publishers_filter": False, "publishers": ["NO"]}
         elif slot_value:
-            return {"publisher_filter": True}
+            return {"publishers_filter": True}
         
-        return {"publisher_filter": None}
+        return {"publishers_filter": None}
         
-    def validate_publisher(
+    def validate_publishers(
         self,
         value: Any,
         dispatcher: CollectingDispatcher,
@@ -402,24 +444,34 @@ class ValidateDetailedRecommendationForm(FormValidationAction):
 
         logger.info(f"Tracker: yolo4")
 
-        if not tracker.get_slot('publisher_filter') and tracker.get_slot('publisher') == "NO":
-            return {"publisher": "NO"}
+        if not tracker.get_slot('publishers_filter') and tracker.get_slot('publishers') == ["NO"]:
+            return {"publishers": ["NO"]}
 
         session = get_session()
         publishers = get_all_publisher_names(session)
         publishers = [publisher[0].lower() for publisher in publishers]
 
-        slot_value = tracker.get_slot('publisher')
+        slot_value = tracker.get_slot('publishers')
 
         if slot_value:
-            # Convertiamo e verifichiamo se il valore è valido
-            normalized_value = slot_value.strip().lower()
-            if normalized_value in publishers:
-                logger.info(f"Tracker: {slot_value.strip()}")
-                return {'publisher': slot_value.strip(), "publisher_filter": True}
+            # Creiamo una lista per i publishers validi
+            valid_publishers = []
+            slot_value = list(set(slot_value))
+            
+            for value in slot_value:
+                # Convertiamo e verifichiamo ogni valore
+                normalized_value = value.strip().lower()
+                if normalized_value in publishers:
+                    logger.info(f"Tracker: {value.strip()}")
+                    valid_publishers.append(value.strip())
+            
+            # Se abbiamo trovato publishers validi, ritorniamo il risultato
+            if valid_publishers:
+                return {'publishers': valid_publishers, "publishers_filter": True}
+
         # Se il valore non è valido, inviamo un messaggio di errore
-        dispatcher.utter_message(text="🚫 Sorry, that's not a valid publisher. Please try again.")
-        return {'publisher': None}
+        dispatcher.utter_message(text="🚫 Sorry, that's not a valid publishers. Please try again.")
+        return {'publishers': None}
 
 class ActionResetSlots(Action):
     def name(self) -> Text:

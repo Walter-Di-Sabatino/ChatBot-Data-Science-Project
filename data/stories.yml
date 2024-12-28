@@ -8,24 +8,28 @@ stories:
       - action: detailed_recommendation_form
       - active_loop: detailed_recommendation_form
       - slot_was_set:
-          - requested_slot: genre_filter
+          - requested_slot: genres_filter
       - slot_was_set:
-          - genre_filter: True
+          - genres_filter: True
       - slot_was_set:
-          - requested_slot: genre
+          - requested_slot: genres
       - slot_was_set:
-          - requested_slot: publisher_filter
+          - genres: ["action", "adventure"]
       - slot_was_set:
-          - publisher_filter: True
+          - requested_slot: publishers_filter
       - slot_was_set:
-          - requested_slot: publisher
+          - publishers_filter: True
+      - slot_was_set:
+          - requested_slot: publishers
+      - slot_was_set:
+          - publishers: ["SEGA", "Konami"]
       - active_loop: null
       - action: action_provide_recommendation
       - action: action_reset_slots
       - intent: goodbye
       - action: utter_goodbye
 
-  - story: get some recommendations with genre and publisher in ask_recommendation
+  - story: get some recommendations with genres and publishers in ask_recommendation
     steps:
       - intent: start
       - action: utter_iamabot
@@ -33,20 +37,20 @@ stories:
       - action: detailed_recommendation_form
       - active_loop: detailed_recommendation_form
       - slot_was_set:
-          - genre_filter: True
+          - genres_filter: True
       - slot_was_set:
-          - publisher: "action"
+          - publishers: ["action", "adventure"]
       - slot_was_set:
-          - publisher_filter: True
+          - publishers_filter: True
       - slot_was_set:
-          - publisher: "Ubisoft"
+          - publishers: ["Ubisoft", "Activision"]
       - active_loop: null
       - action: action_provide_recommendation
       - action: action_reset_slots
       - intent: goodbye
       - action: utter_goodbye
 
-  - story: get some recommendations with genre and publisher in filter
+  - story: get some recommendations with genres and publishers in filter
     steps:
       - intent: start
       - action: utter_iamabot
@@ -54,17 +58,17 @@ stories:
       - action: detailed_recommendation_form
       - active_loop: detailed_recommendation_form
       - slot_was_set:
-          - requested_slot: genre_filter
+          - requested_slot: genres_filter
       - slot_was_set:
-          - genre_filter: True
+          - genres_filter: True
       - slot_was_set:
-          - publisher: "action"
+          - genres: ["action"]
       - slot_was_set:
-          - requested_slot: publisher_filter
+          - requested_slot: publishers_filter
       - slot_was_set:
-          - publisher_filter: True
+          - publishers_filter: True
       - slot_was_set:
-          - publisher: "Ubisoft"
+          - publishers: ["Ubisoft"]
       - active_loop: null
       - action: action_provide_recommendation
       - action: action_reset_slots
@@ -79,17 +83,17 @@ stories:
       - action: detailed_recommendation_form
       - active_loop: detailed_recommendation_form
       - slot_was_set:
-          - requested_slot: genre_filter
+          - requested_slot: genres_filter
       - slot_was_set:
-          - genre_filter: False
+          - genres_filter: False
       - slot_was_set:
-          - genre: "NO"
+          - genres: ["NO"]
       - slot_was_set:
-          - requested_slot: publisher_filter
+          - requested_slot: publishers_filter
       - slot_was_set:
-          - publisher_filter: False
+          - publishers_filter: False
       - slot_was_set:
-          - publisher: "NO"
+          - publishers: ["NO"]
       - active_loop: null
       - action: action_provide_recommendation
       - action: action_reset_slots
