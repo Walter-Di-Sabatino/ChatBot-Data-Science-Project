@@ -41,7 +41,7 @@ def get_top_games(session, limit=5):
 
     return query.order_by(score_expr.desc()).limit(limit).all()
 
-def get_top_games_filtered(session, publisher_names=None, tag_names=None, limit=5):
+def get_top_games_filtered(session, publisher_names=None, tag_names=None, limit=None):
     score_expr = (
         (func.coalesce(Game.positive, 0) / func.coalesce(Game.positive + Game.negative, 1))
         * func.log(func.coalesce(Game.positive - Game.negative, 0) + 1)
@@ -61,4 +61,11 @@ def get_top_games_filtered(session, publisher_names=None, tag_names=None, limit=
             or_(*[Tag.name.ilike(tag_name) for tag_name in tag_names])
         )
 
-    return query.order_by(score_expr.desc()).limit(limit).all()
+    query = query.order_by(score_expr.desc())
+
+    # Aggiungi il limite solo se limit è specificato
+    if limit is not None:
+        query = query.limit(limit)
+
+    return query.all()
+

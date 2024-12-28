@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 from sqlalchemy import create_engine, func
 from sqlalchemy.orm import sessionmaker, Session
 from typing import Any, Text, Dict, List
+from collections import defaultdict
 
 # Rasa SDK Imports
 from rasa_sdk import Action, Tracker, FormValidationAction
@@ -60,13 +61,13 @@ def format_names(names):
 
     return all_names
 
-def format_names_list(names):
-
-    all_names = ", ".join([name for name in names])
+def format_names_list(names, logic_op = "or"):
+    
+    all_names = ", ".join([name.capitalize() for name in names])
 
     if ", " in all_names:
         all_names = all_names.rsplit(", ", 1)
-        all_names = " or ".join(all_names)
+        all_names = f" {logic_op} ".join(all_names)
 
     return all_names
 
@@ -77,6 +78,63 @@ def format_plural(word, count):
 def format_plural_verb(count):
     """Return the plural form of a word if count is greater than 1."""
     return "are" if count > 1 else "is"
+
+def get_games_for_publishers_and_tags(games, publisher_names, genres_names, dispatcher, limit=5, use_publishers=True, use_tags=True):
+    games_by_publisher = defaultdict(list)
+    games_by_tag = defaultdict(list)
+
+    publisher_names = [nome.strip().lower() for nome in publisher_names]
+    genres_names = [nome.strip().lower() for nome in genres_names]
+
+    if use_publishers or use_tags:
+        for game in games:
+
+            if use_publishers:
+                for publisher in game.publishers:
+                    if publisher.name.strip().lower() in publisher_names:
+                        games_by_publisher[publisher.name.strip().lower()].append(game)
+
+            if use_tags:
+                for tag in game.tags:
+                    if tag.name.strip().lower() in genres_names:
+                        games_by_tag[tag.name.strip().lower()].append(game)
+
+    selected_games = set()
+
+    if use_publishers:
+
+        publishers_not_found = publisher_names.copy()
+
+        for publisher, games_list in games_by_publisher.items():
+            publishers_not_found.remove(publisher)
+            if games_list:
+                selected_games.add(random.choice(games_list))
+        
+        if publishers_not_found:
+            dispatcher.utter_message(f"No games available for the recommendations for the publisher: {format_names_list(publishers_not_found, 'and' )} 😕")
+
+    if use_tags:
+
+        genres_not_found = genres_names.copy()
+
+        logger.info(f"Tracker nomeeee: {genres_not_found}")
+
+        for tag, games_list in games_by_tag.items():
+            genres_not_found.remove(tag)    
+            if games_list:
+                selected_games.add(random.choice(games_list))
+
+        if genres_not_found:
+            dispatcher.utter_message(f"No games available for the recommendations for the genre: {format_names_list(genres_not_found, 'and' )} 😕")
+
+    # Seleziona giochi aggiuntivi se il numero di giochi selezionati è inferiore al limite
+    remaining_games = [game for game in games if game not in selected_games]
+    additional_games_needed = max(0, limit - len(selected_games))
+
+    if additional_games_needed > 0:
+        selected_games.update(random.sample(remaining_games, min(additional_games_needed, len(remaining_games))))
+
+    return list(selected_games)
 
 def game_info_response(game):
     # Recupero dei nomi degli editori e degli sviluppatori
@@ -291,12 +349,9 @@ class ActionProvideRecommendation(Action):
             negative_response = "🚫 Sorry, I couldn't retrieve the top games right now."
 
         elif genres and publishers and genres_filter and publishers_filter:
-            games = get_top_games_filtered(session, publishers, genres, limit = 100)
+            games = get_top_games_filtered(session, publishers, genres)
 
-            if len(games) >= 5:
-                games = random.sample(games, 5)
-            else:
-                games = games
+            games = get_games_for_publishers_and_tags(games, publishers, genres, dispatcher)
 
             verb = format_plural_verb(len(games))
 
@@ -304,12 +359,9 @@ class ActionProvideRecommendation(Action):
             negative_response = f"🚫 Sorry, I couldn't find any games for the {format_names_list(genres)} {genre_label} and {format_names_list(publishers)} {publisher_label} combination."
 
         elif not genres and publishers and not genres_filter and publishers_filter:
-            games = get_top_games_filtered(session, publisher_names=publishers, limit=100)
+            games = get_top_games_filtered(session, publisher_names=publishers)
 
-            if len(games) >= 5:
-                games = random.sample(games, 5)
-            else:
-                games = games
+            games = get_games_for_publishers_and_tags(games, publishers, genres, dispatcher, use_tags=False)
             
             verb = format_plural_verb(len(games))
 
@@ -317,12 +369,9 @@ class ActionProvideRecommendation(Action):
             negative_response = f"🚫 Sorry, I couldn't find any games published by {format_names_list(publishers)}."
 
         elif genres and not publishers and genres_filter and not publishers_filter:
-            games = get_top_games_filtered(session, tag_names= genres, limit= 500)
+            games = get_top_games_filtered(session, tag_names= genres)
 
-            if len(games) >= 5:
-                games = random.sample(games, 5)
-            else:
-                games = games
+            games = get_games_for_publishers_and_tags(games, publishers, genres, dispatcher, use_publishers = False)
             
             verb = format_plural_verb(len(games))
             
