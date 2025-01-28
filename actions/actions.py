@@ -246,7 +246,7 @@ class ActionProvidePublisherGames(Action):
         
         session = get_session()
 
-        games = get_top_games_filtered(session, publisher_names = [original_publisher])
+        games = get_top_games_filtered(session, publisher_names = [original_publisher], limit=5)
 
         verb = format_plural_verb(len(games))
 
