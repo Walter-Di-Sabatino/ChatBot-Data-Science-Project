@@ -39,7 +39,7 @@ stories:
       - slot_was_set:
           - genres_filter: True
       - slot_was_set:
-          - publishers: ["action", "adventure"]
+          - generes: ["action", "adventure"]
       - slot_was_set:
           - publishers_filter: True
       - slot_was_set:
