@@ -1,0 +1,8 @@
+SQLAlchemy
+sqlalchemy-schemadisplay
+python-dotenv
+pandas
+requests
+validators
+python-dateutil
+rasa-sdk
