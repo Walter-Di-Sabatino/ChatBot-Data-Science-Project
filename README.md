@@ -1,68 +1,68 @@
 
 # 🎮 Videogame Suggestions Chatbot
 
-Un chatbot intelligente sviluppato con **Rasa** che fornisce **consigli sui videogiochi** basati sulle preferenze dell’utente.
-Il bot sfrutta un database derivato dallo **Steam Games Dataset** per rispondere a domande su generi, publisher e titoli, generando raccomandazioni personalizzate.
-È stato inoltre integrato con **Telegram** per un’esperienza di utilizzo semplice e accessibile da mobile.
+An intelligent chatbot developed with **Rasa** that provides **videogame recommendations** based on user preferences.
+The bot uses a database derived from the **Steam Games Dataset** to answer questions about genres, publishers, and titles, generating personalized suggestions.
+It has also been integrated with **Telegram** for a simple and mobile-friendly user experience.
 
 ---
 
-## 🚀 Funzionalità
+## 🚀 Features
 
-* 🔎 **Visualizzazione dei generi disponibili** – Elenco dei generi principali ordinati per popolarità.
-* 🏢 **Visualizzazione dei publisher disponibili** – Elenco dei publisher con più titoli pubblicati.
-* 🎲 **Informazioni su un videogioco specifico** – Nome, data di rilascio, prezzo, recensioni, piattaforme supportate, ecc.
-* 📚 **Elenco dei videogiochi di un publisher** – I giochi più giocati e meglio recensiti pubblicati da un editore.
-* 🤖 **Raccomandazioni personalizzate** – Suggerimenti basati su filtri di genere e/o publisher selezionati dall’utente.
+* 🔎 **View available genres** – List of main genres sorted by popularity.
+* 🏢 **View available publishers** – List of publishers with the highest number of released titles.
+* 🎲 **Information about a specific videogame** – Name, release date, price, reviews, supported platforms, and more.
+* 📚 **List of a publisher’s videogames** – Most played and top-rated games released by a publisher.
+* 🤖 **Personalized recommendations** – Suggestions based on genre and/or publisher filters selected by the user.
 
 ---
 
-## 🛠️ Tecnologie utilizzate
+## 🛠️ Technologies Used
 
-* **[Rasa](https://rasa.com/)** – Framework open source per chatbot NLP.
+* **[Rasa](https://rasa.com/)** – Open-source NLP chatbot framework.
 * **Python 3.9+**
-* **SQLAlchemy** – ORM per la gestione del database.
-* **SQLite / SQL** – Per l’archiviazione dei dati.
-* **Ngrok** – Per esporre il bot in locale e collegarlo a Telegram.
-* **Telegram Bot API** – Per interazione con gli utenti.
+* **SQLAlchemy** – ORM for database management.
+* **SQLite / SQL** – For data storage.
+* **Ngrok** – To expose the bot locally and connect it to Telegram.
+* **Telegram Bot API** – For user interaction.
 
 ---
 
-## 📂 Struttura del progetto
+## 📂 Project Structure
 
-* `actions.py` – Azioni custom del bot collegate al DB.
-* `nlu.yml` – Intent ed entità per l’addestramento del modello NLP.
-* `rules.yml` – Regole di gestione del dialogo.
-* `stories.yml` – Esempi di conversazioni reali.
-* `config.yml` – Configurazione del modello di machine learning.
-* `domain.yml` – Definizione di intent, slot, utterances, azioni e form.
-* `database/` – Script SQLAlchemy per il DB (`seeders.py`, `db_queries.py`).
+* `actions.py` – Custom bot actions connected to the database.
+* `nlu.yml` – Intents and entities for NLP model training.
+* `rules.yml` – Dialogue management rules.
+* `stories.yml` – Examples of real conversations.
+* `config.yml` – Machine learning model configuration.
+* `domain.yml` – Definition of intents, slots, utterances, actions, and forms.
+* `database/` – SQLAlchemy scripts for the DB (`seeders.py`, `db_queries.py`).
 
 ---
 
 ## 📊 Dataset
 
-Il chatbot utilizza il **[Steam Games Dataset](https://www.kaggle.com/datasets/fronkongames/steam-games-dataset?select=games.json)**, contenente circa **97.000 videogiochi**.
-Dal dataset sono stati caricati **5.000 titoli selezionati** (con più recensioni e valutazioni positive) per ottimizzare le prestazioni.
+The chatbot uses the **[Steam Games Dataset](https://www.kaggle.com/datasets/fronkongames/steam-games-dataset?select=games.json)**, containing about **97,000 videogames**.
+From this dataset, **5,000 selected titles** (with the most reviews and positive ratings) were loaded to optimize performance.
 
 ---
 
 ## ✅ Testing
 
-Sono stati effettuati test per:
+Tests were performed for:
 
-* Avvio e connessione del bot
-* Visualizzazione generi e publisher
-* Richiesta info su singoli videogiochi
-* Raccomandazioni con e senza filtri
-* Gestione input errati
+* Bot startup and connection
+* Genre and publisher display
+* Requests for specific videogame details
+* Recommendations with and without filters
+* Handling of incorrect inputs
 
 ---
 
-## 👥 Autori
+## 👥 Authors
 
 * **Agnese Bruglia**
 * **Alessandra D’Anna**
 * **Walter Di Sabatino**
 
-Relazione svolta per il corso di **Data Science** presso l’**Università Politecnica delle Marche**.
+Project completed for the **Data Science** course at the **Polytechnic University of Marche**.
